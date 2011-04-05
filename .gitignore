@@ -5,3 +5,4 @@ run_tests
 sudoku
 .D_TARGET
 .deps
+doc

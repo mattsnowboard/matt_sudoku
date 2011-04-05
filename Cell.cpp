@@ -1,5 +1,6 @@
 
 #include "Cell.h"
+#include <iostream>
 
 namespace Sudoku
 {
@@ -11,6 +12,25 @@ Cell::Cell()
       _guessedVal( 0 ),
       _displayCorrect( false )
 {}
+
+Cell::Cell( const Cell &c )
+{
+    *this = c;
+}
+
+Cell& Cell::operator=( const Cell &c )
+{
+    if ( this != &c )
+    {
+        _x = c._x;
+        _y = c._y;
+        _correctVal = c._correctVal;
+        _guessedVal = c._guessedVal;
+        _displayCorrect = c._displayCorrect;
+        _marks = c._marks;
+    }
+    return *this;
+}
 
 void Cell::SetPos( size_t x, size_t y )
 {
@@ -69,6 +89,24 @@ Cell::MarkedValues Cell::GetMarkedValues() const
 void Cell::Accept( Visitor& v )
 {
 
+}
+
+bool Cell::operator==( const Cell& c ) const
+{
+    return ( c._x == _x &&
+             c._y == _y &&
+             c._correctVal == _correctVal &&
+             c._guessedVal == _guessedVal &&
+             c._displayCorrect == _displayCorrect &&
+             c._marks == _marks );
+}
+
+std::ostream& operator<<( std::ostream &os, const Cell &c )
+{
+    return os << "Cell at (" << c._x << ", " << c._y << ")"
+              << ", Correct=" << c._correctVal
+              << ", Guess=" << c._guessedVal
+              << ", displayed? " << c._displayCorrect;
 }
 
 }

@@ -30,6 +30,20 @@ public:
     Cell();
 
     /**
+     * Allow copying a Cell
+     * @param c Cell to copy
+     * @post this Cell has same attributes as c
+     */
+    Cell( const Cell& c );
+
+    /**
+     * Copy all values from c to this Cell
+     * @param c Cell to copy
+     * @return this for method chaining
+     */
+    Cell& operator=( const Cell& c );
+
+    /**
      * Set the position of the Cell on the board
      * @param x X index position (column number)
      * @param y Y index position (row number)
@@ -147,6 +161,13 @@ public:
     void Accept( Visitor& v );
 
     /**
+     * Check for ABSOLUTE equality
+     * @param c The Cell to compare with
+     * @return true if the Cells have the same data
+     */
+    bool operator==( const Cell& c ) const;
+
+    /**
      * No cleanup needed
      */
     ~Cell() {}
@@ -161,11 +182,12 @@ public:
     static void Validate( int i, int low = 1, int high = 9 );
 
 private:
-    /// Disallowed as there is no need for copy or assignment
-    Cell( const Cell& );
-    Cell& operator=( const Cell& );
 
-private:
+    /**
+     * Used for debugging to print all of the data
+     */
+    friend std::ostream& operator<<( std::ostream &os, const Cell &c );
+
     /// x location on the Sudoku board {1...9}
     size_t _x;
     /// y location on the Sudoku board {1...9}

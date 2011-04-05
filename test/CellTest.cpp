@@ -3,34 +3,24 @@
 
 namespace {
 
-// The fixture for testing class Cell
 class CellTest : public ::testing::Test
 {
 protected:
 
     CellTest()
     {
-        // You can do set-up work for each test here.
     }
 
     virtual ~CellTest()
     {
-        // You can do clean-up work that doesn't throw exceptions here.
     }
-
-    // If the constructor and destructor are not enough for setting up
-    // and cleaning up each test, you can define the following methods:
 
     virtual void SetUp()
     {
-        // Code here will be called immediately after the constructor (right
-        // before each test).
     }
 
     virtual void TearDown()
     {
-        // Code here will be called immediately after each test (right
-        // before the destructor).
     }
 
     
@@ -281,6 +271,60 @@ TEST_F( CellTest, NoThrowOnInRangePos )
     Sudoku::Cell c;
     EXPECT_NO_THROW( c.SetPos( 1, 9 ) );
     EXPECT_NO_THROW( c.SetPos( 9, 1 ) );
+}
+
+// Make sure operator== is working
+TEST_F( CellTest, EqualityComparisonIsCorrect )
+{
+    Sudoku::Cell a, b;
+    a.SetPos( 5, 6 );
+    b.SetPos( 5, 6 );
+    a.SetCorrect( 3 );
+    b.SetCorrect( 3 );
+    a.SetGuess( 3 );
+    b.SetGuess( 3 );
+    a.Display( true );
+    b.Display( true );
+    a.Mark( 3 );
+    b.Mark( 3 );
+    EXPECT_EQ( a, b );
+}
+
+// Make sure operator== can return false
+TEST_F( CellTest, EqualityComparisonCanReturnFalse )
+{
+    Sudoku::Cell a, b;
+    a.SetPos( 5, 6 );
+    b.SetPos( 1, 1 );
+    EXPECT_FALSE( a == b );
+}
+
+// Make sure copy constructor is working
+TEST_F( CellTest, CopyConstructReturnsExactCopy )
+{
+    Sudoku::Cell original;
+    original.SetPos( 3, 4 );
+    original.SetCorrect( 5 );
+    original.SetGuess( 2 );
+    original.Display( true );
+    original.Mark( 2 );
+    original.Mark( 7 );
+    Sudoku::Cell copy( original );
+    EXPECT_EQ( original, copy );
+}
+
+// Make sure assignment operator is working
+TEST_F( CellTest, AssignmentOperatorReturnsExactCopy )
+{
+    Sudoku::Cell original, copy;
+    original.SetPos( 3, 4 );
+    original.SetCorrect( 5 );
+    original.SetGuess( 2 );
+    original.Display( true );
+    original.Mark( 2 );
+    original.Mark( 7 );
+    copy = original;
+    EXPECT_EQ( original, copy );
 }
 
 }  // namespace
