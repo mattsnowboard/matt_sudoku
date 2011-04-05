@@ -44,7 +44,10 @@ void ExclusionMethod::ExecuteForward()
           it != _neighbors.end();
           ++it )
     {
-        (*it)->Unmark( _guessVal );
+        if ( (*it)->CanGuess() )
+        {
+            (*it)->Unmark( _guessVal );
+        }
     }
 }
 
@@ -59,7 +62,10 @@ void ExclusionMethod::ExecuteReverse()
           it != _neighbors.end();
           ++it )
     {
-        (*it)->Mark( _guessVal );
+        if ( (*it)->CanGuess() && !(*it)->GetMarkedValues().empty() )
+        {
+            (*it)->Mark( _guessVal );
+        }
     }
 }
 

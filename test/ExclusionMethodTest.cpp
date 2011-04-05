@@ -195,8 +195,45 @@ TEST_F( ExclusionMethodTest, ForwardOperationDoesNothingIfNoMarks )
 }
 
 // show that a Neighbor with Display(true) AND the mark set will not change
-TEST_F( ExclusionMethodTest, DISABLED_ForwardOperationWillNotUnmarkCorrectNeighbors )
+TEST_F( ExclusionMethodTest, ForwardOperationWillNotUnmarkCorrectNeighbors )
 {
+    std::shared_ptr<Sudoku::Cell> c = _markedPuzzle->GetCell( 1, 2 );
+    c->SetGuess( 4 );
+    c->ClearMarks();
+    Sudoku::Puzzle::Container N = _markedPuzzle->GetNeighbors( c );
+    N.erase( c );
+    // verify that marks are set
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        (*it)->Display( true );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[3] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[4] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[5] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[6] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[7] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[8] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _markedPuzzle, c );
+    em.ExecuteForward();
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        EXPECT_TRUE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[3] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[4] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[5] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[6] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[7] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[8] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
+    }
 }
 
 // Not valid if cell has no guess
@@ -228,23 +265,213 @@ TEST_F( ExclusionMethodTest, ReverseIsValidWorks )
 }
 
 // show that reverse exclusion will add marks to neighbors only
-TEST_F( ExclusionMethodTest, DISABLED_ReverseOperationAddsNeighborMarks )
+TEST_F( ExclusionMethodTest, ReverseOperationAddsNeighborMarks )
 {
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 1, 1 );
+    c->SetGuess( 9 );
+    c->ClearMarks();
+    Sudoku::Puzzle::Container N = _puzzle->GetNeighbors( c );
+    N.erase( c );
+    // verify that marks are unset
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        (*it)->Mark( 2 );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _puzzle, c );
+    em.ExecuteReverse();
+    // should mark 9 on all Neighbor cells
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
+    }
 }
 
 // show that exclusion will not touch non neighbors
-TEST_F( ExclusionMethodTest, DISABLED_ReverseOperationDoesNotAffectNonNeighbors )
+TEST_F( ExclusionMethodTest, ReverseOperationDoesNotAffectNonNeighbors )
 {
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 3, 2 );
+    c->SetGuess( 7 );
+    c->ClearMarks();
+    Sudoku::Puzzle::Container All = _puzzle->GetAllCells();
+    Sudoku::Puzzle::Container N = _puzzle->GetNeighbors( c );
+    Sudoku::Puzzle::Container NotNeighbor;
+    std::set_difference( All.begin(), All.end(),
+                         N.begin(), N.end(),
+                         std::inserter( NotNeighbor, NotNeighbor.begin() ) );
+    // verify that marks are set
+    for ( Sudoku::Puzzle::Container::iterator it = NotNeighbor.begin();
+          it != NotNeighbor.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _puzzle, c );
+    em.ExecuteReverse();
+    for ( Sudoku::Puzzle::Container::iterator it = NotNeighbor.begin();
+          it != NotNeighbor.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
 }
 
 // show that exclusion works even if there are existing marks for the value
-TEST_F( ExclusionMethodTest, DISABLED_ReverseOperationDoesNothingIfAlreadyMarked )
+TEST_F( ExclusionMethodTest, ReverseOperationDoesNothingIfAlreadyMarked )
 {
+    std::shared_ptr<Sudoku::Cell> c = _markedPuzzle->GetCell( 4, 2 );
+    c->SetGuess( 3 );
+    Sudoku::Puzzle::Container all = _markedPuzzle->GetAllCells();
+    // verify that marks are set
+    for ( Sudoku::Puzzle::Container::iterator it = all.begin();
+          it != all.end();
+          ++it )
+    {
+        EXPECT_TRUE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[3] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[4] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[5] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[6] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[7] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[8] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _markedPuzzle, c );
+    em.ExecuteReverse();
+    for ( Sudoku::Puzzle::Container::iterator it = all.begin();
+          it != all.end();
+          ++it )
+    {
+        EXPECT_TRUE( (*it)->GetMarkContainer()[1] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[3] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[4] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[5] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[6] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[7] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[8] );
+        EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
+    }
 }
 
 // show that a Neighbor with Display(true) AND the mark clear will not change
-TEST_F( ExclusionMethodTest, DISABLED_ReverseOperationWillNotMarkCorrectNeighbors )
+TEST_F( ExclusionMethodTest, ReverseOperationWillNotMarkCorrectNeighbors )
 {
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 1, 2 );
+    c->SetGuess( 2 );
+    c->ClearMarks();
+    Sudoku::Puzzle::Container N = _puzzle->GetNeighbors( c );
+    N.erase( c );
+    // verify that marks are set
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        (*it)->Display( true );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _puzzle, c );
+    em.ExecuteReverse();
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
+}
+
+// show that a Neighbor with no marks will not be marked by reverse method
+TEST_F( ExclusionMethodTest, ReverseOperationWillNotMarkUnmarkedNeighbors )
+{
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 9, 5 );
+    c->SetGuess( 1 );
+    c->ClearMarks();
+    Sudoku::Puzzle::Container N = _puzzle->GetNeighbors( c );
+    N.erase( c );
+    // verify that marks are set
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
+    Sudoku::ExclusionMethod em( _puzzle, c );
+    em.ExecuteReverse();
+    for ( Sudoku::Puzzle::Container::iterator it = N.begin();
+          it != N.end();
+          ++it )
+    {
+        EXPECT_FALSE( (*it)->GetMarkContainer()[1] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[2] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[3] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[4] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[5] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[6] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[7] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[8] );
+        EXPECT_FALSE( (*it)->GetMarkContainer()[9] );
+    }
 }
 
 }  // namespace
