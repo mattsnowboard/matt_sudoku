@@ -1,5 +1,5 @@
-#ifndef SUDOKU_SINGLE_CANDIDATE_METHOD_H
-#define SUDOKU_SINGLE_CANDIDATE_METHOD_H
+#ifndef SUDOKU_EXCLUSION_METHOD_H
+#define SUDOKU_EXCLUSION_METHOD_H
 
 #include <memory>
 #include "SolutionMethod.h"

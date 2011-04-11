@@ -3,7 +3,8 @@ SRC_DIR = /home/matt/Documents/cse335/honors_option
 
 TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/SingleCandidateMethodTest.cpp test/ExclusionMethodTest.cpp
-LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp
+LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
+	BlockIntersectionMethod.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)

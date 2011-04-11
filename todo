@@ -1,0 +1,33 @@
+
+1. Remaining Solving Methods
+   A. BlockIntersectionMethodTest
+   B. CoveringSetMethod implementation
+   C. CoveringSetMethodTest
+   D. XWingMethod
+   E. XWingMethodTest
+2. Helper
+   A. Given a Puzzle, find all possible ways to do any method
+3. Validator - take a puzzle with guesses and verify it is correct
+4. Puzzle::Randomize() - Create a valid (solved) puzzle
+5. Solver
+   A. Method to Mark every possible move based on correct displayed cells
+6. Generator (just inverse of Solver, seems not as hard if paper is right)
+7. UI
+   A. Render a puzzle
+   B. Get events for clicking cell
+   C. Marking and guessing
+   D. Observe data model for changes and update view
+   E. Undo/Redo
+      i. Commands
+         a. Guess
+         b. Mark
+         c. Clear Marks
+         d. Get Mark hints
+8. Load Puzzle to solve
+   A. Use some simple format
+   B. Allow other formats
+9. Export generated Puzzle
+   A. Same formats as above?
+10. Save game state (including undo/redo stack)
+11. Player Score - Timer with penalty for hints
+12. Puzzle Ranker - Difficulty of a Puzzle
