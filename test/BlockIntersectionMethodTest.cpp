@@ -32,7 +32,8 @@ protected:
         Sudoku::Puzzle::Container rowDiff;
         std::set_difference( row.begin(), row.end(),
                              block.begin(), block.end(),
-                             std::inserter( rowDiff, rowDiff.begin() ) );
+                             std::inserter( rowDiff, rowDiff.begin() ),
+                             row.value_comp() );
         return rowDiff;
     }
 
@@ -45,7 +46,8 @@ protected:
         Sudoku::Puzzle::Container colDiff;
         std::set_difference( col.begin(), col.end(),
                              block.begin(), block.end(),
-                             std::inserter( colDiff, colDiff.begin() ) );
+                             std::inserter( colDiff, colDiff.begin() ),
+                             col.value_comp() );
         return colDiff;
     }
 
@@ -58,7 +60,8 @@ protected:
         Sudoku::Puzzle::Container blockDiff;
         std::set_difference( block.begin(), block.end(),
                              row.begin(), row.end(),
-                             std::inserter( blockDiff, blockDiff.begin() ) );
+                             std::inserter( blockDiff, blockDiff.begin() ),
+                             block.value_comp() );
         return blockDiff;
     }
 
@@ -71,7 +74,8 @@ protected:
         Sudoku::Puzzle::Container blockDiff;
         std::set_difference( block.begin(), block.end(),
                              col.begin(), col.end(),
-                             std::inserter( blockDiff, blockDiff.begin() ) );
+                             std::inserter( blockDiff, blockDiff.begin() ),
+                             block.value_comp() );
         return blockDiff;
     }
 

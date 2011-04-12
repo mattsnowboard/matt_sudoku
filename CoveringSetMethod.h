@@ -27,6 +27,7 @@ public:
 
     /**
      * Verify that the subset size is equal to the number of marks it contains
+     * Verify that the sector\subset has some of the marks
      * Verify that subset is a subset of sector
      * @return true if the precondition holds
      */
@@ -57,6 +58,8 @@ public:
 private:
     Puzzle::Container _sector;
     Puzzle::Container _subset;
+    Puzzle::Container _diff;
+    Cell::MarkedValues _subMarks;
 };
 
 }

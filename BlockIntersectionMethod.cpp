@@ -122,7 +122,7 @@ void BlockIntersectionMethod::verifyGeometry()
     std::set_intersection( _primary.begin(), _primary.end(),
                            _secondary.begin(), _secondary.end(),
                            std::inserter( temp, temp.begin() ),
-                           Sudoku::CellSorter() );
+                           _primary.value_comp() );
     if ( !temp.empty() )
     {
         throw std::logic_error(

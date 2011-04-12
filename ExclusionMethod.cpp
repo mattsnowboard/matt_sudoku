@@ -25,8 +25,7 @@ public:
 
 ExclusionMethod::ExclusionMethod( std::shared_ptr<Puzzle> p,
                                   std::shared_ptr<Cell> c )
-    : _neighbors( p->GetNeighbors( c ) ),
-      _cell( c ),
+    : _cell( c ),
       _guessVal( c->DisplayedValue() )
 {
     Puzzle::Container temp = p->GetNeighbors( c );
