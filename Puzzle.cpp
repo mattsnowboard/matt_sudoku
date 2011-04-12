@@ -141,7 +141,7 @@ Puzzle::Container Puzzle::GetCol( size_t c )
     return col;
 }
 
-Puzzle::Container Puzzle::GetBlock( int x, int y )
+Puzzle::Container Puzzle::GetBlock( size_t x, size_t y )
 {
     Cell::Validate( x, 1, 3 );
     Cell::Validate( y, 1, 3 );
@@ -150,6 +150,12 @@ Puzzle::Container Puzzle::GetBlock( int x, int y )
                   std::inserter( block, block.begin() ),
                   CellInBlock( x, y ) );
     return block;
+}
+
+Puzzle::Container Puzzle::GetBlock( std::shared_ptr<Cell> c )
+{
+    return GetBlock( ( c->GetX() - 1 ) / 3 + 1,
+                     ( c->GetY() - 1 ) / 3 + 1 );
 }
 
 std::shared_ptr<Cell> Puzzle::GetCell( size_t x, size_t y )

@@ -90,7 +90,13 @@ public:
      * @pre x, y are each in range [1,3]
      * @return vector of Cell's in the given block
      */
-    Container GetBlock( int x, int y );
+    Container GetBlock( size_t x, size_t y );
+
+    /**
+     * Figures out which block to get for a given Cell
+     * @overload Container GetBlock( size_t x, size_t y )
+     */
+    Container GetBlock( std::shared_ptr<Cell> c );
     
     /**
      * Get a cell by position

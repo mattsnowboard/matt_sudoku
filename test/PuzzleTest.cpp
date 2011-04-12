@@ -199,6 +199,29 @@ TEST_F( PuzzleTest, GetBlockReturnsCorrectCells )
     }
 }
 
+// Checks that getting blocks by Cell is equivalent to by coordinate
+TEST_F( PuzzleTest, GetBlockByCellSameAsByCoord )
+{
+    Sudoku::Puzzle p;
+
+    for ( size_t x = 1; x <= 3; x++ )
+    {
+        for ( size_t y = 1; y <= 3; y++ )
+        {
+            Sudoku::Puzzle::Container blockByCoord = p.GetBlock( x, y );
+            Sudoku::Puzzle::Container::iterator it = blockByCoord.begin();
+            // now test the positions
+            for ( ; it != blockByCoord.end(); ++it )
+            {
+                Sudoku::Puzzle::Container blockByCell = p.GetBlock( *it );
+                EXPECT_TRUE( std::equal( blockByCoord.begin(),
+                                         blockByCoord.end(),
+                                         blockByCell.begin() ) );
+            }
+        }
+    }
+}
+
 // Get neighbors returns the union of the block, row, and column of a cell
 TEST_F( PuzzleTest, NeighborSizeIsCorrect )
 {

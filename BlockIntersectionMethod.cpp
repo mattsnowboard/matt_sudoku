@@ -10,7 +10,7 @@ BlockIntersectionMethod::BlockIntersectionMethod( std::shared_ptr<Cell> c,
                                                   unsigned mark,
                                                   Puzzle::Container primary,
                                                   Puzzle::Container secondary )
-    : _cell( c ), _mark( mark ), _primary( primary ), _secondary( _secondary )
+    : _cell( c ), _mark( mark ), _primary( primary ), _secondary( secondary )
 {
     verifyGeometry();
 }
@@ -32,7 +32,7 @@ void BlockIntersectionMethod::ExecuteForward()
 
 bool BlockIntersectionMethod::VerifyForwardConditions()
 {
-    if ( ! _cell->GetMarkContainer()[_mark] )
+    if ( !_cell->GetMarkContainer()[_mark] )
     {
         return false;
     }
