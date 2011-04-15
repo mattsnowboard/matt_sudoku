@@ -1,6 +1,7 @@
 
 #include "Cell.h"
 #include <iostream>
+#include <stdexcept>
 
 namespace Sudoku
 {
@@ -49,7 +50,14 @@ void Cell::SetCorrect( int correct )
 void Cell::SetGuess( int guess )
 {
     Validate( guess, 0, 9 );
-    _guessedVal = guess;
+    if ( CanGuess() )
+    {
+        _guessedVal = guess;
+    }
+    else
+    {
+        throw std::logic_error( "Cannot guess on a correct displayed Cell" );
+    }
 }
 
 int Cell::DisplayedValue() const

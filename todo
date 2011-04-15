@@ -1,12 +1,11 @@
 
 1. Remaining Solving Methods
-   B. CoveringSetMethod implementation
-   C. CoveringSetMethodTest
    D. XWingMethod
    E. XWingMethodTest
 2. Helper
    A. Given a Puzzle, find all possible ways to do any method
 3. Validator - take a puzzle with guesses and verify it is correct
+   A. Guesses (not just for correct answers generated or solved)
 4. Puzzle::Randomize() - Create a valid (solved) puzzle
 5. Solver
    A. Method to Mark every possible move based on correct displayed cells

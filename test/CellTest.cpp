@@ -118,6 +118,15 @@ TEST_F( CellTest, CanChangeGuess )
     EXPECT_EQ( 9, c.DisplayedValue() );
 }
 
+// Cannot guess for correctly displayed
+TEST_F( CellTest, CannotGuessIfCorrectDisplayed )
+{
+    Sudoku::Cell c;
+    c.SetCorrect( 3 );
+    c.Display( true );
+    EXPECT_ANY_THROW( c.SetGuess( 2 ) );
+}
+
 // Correct check works
 TEST_F( CellTest, IsCorrectWorks )
 {

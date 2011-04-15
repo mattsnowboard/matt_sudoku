@@ -134,6 +134,14 @@ public:
     int DisplayedValue() const;
 
     /**
+     * Get the actual correct value even if it is hidden
+     * This allows algorithms to look at the real answer even if it is hidden
+     * Mostly used for validating puzzles
+     * @return Actual correct value (if set)
+     */
+    int GetCorrectValue() const { return _correctVal; }
+
+    /**
      * Check if the guessed value is correct
      * @note This will be false if _correctVal == 0
      * @return true if _correctVal == _guessedVal != 0

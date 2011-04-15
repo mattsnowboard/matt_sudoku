@@ -334,6 +334,7 @@ TEST_F( PuzzleTest, EqualityComparisonFailsIfOneCellChanged )
     Sudoku::Puzzle a, b;
     Modify( a );
     Modify( b );
+    b.GetCell( 5, 5 )->Display( false );
     b.GetCell( 5, 5 )->SetGuess( 0 );
     EXPECT_FALSE( a == b );
 }
