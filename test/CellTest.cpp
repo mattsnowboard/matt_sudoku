@@ -254,6 +254,29 @@ TEST_F( CellTest, CanSetAllMarks )
     EXPECT_EQ( 9u, c.GetMarkedValues().size() );
 }
 
+// Tests the setting of Marks with a container
+TEST_F( CellTest, CanSetClearSeveralMarks )
+{
+    Sudoku::Cell c;
+    c.Mark( 4 );
+    c.Mark( 5 );
+    c.Mark( 6 );
+    Sudoku::Cell::MarkContainer m;
+    // have one in common and some removed and some new
+    m.set( 4 );
+    m.set( 9 );
+    c.SetMarkContainer( m );
+    EXPECT_FALSE( c.GetMarkContainer()[1] );
+    EXPECT_FALSE( c.GetMarkContainer()[2] );
+    EXPECT_FALSE( c.GetMarkContainer()[3] );
+    EXPECT_TRUE( c.GetMarkContainer()[4] );
+    EXPECT_FALSE( c.GetMarkContainer()[5] );
+    EXPECT_FALSE( c.GetMarkContainer()[6] );
+    EXPECT_FALSE( c.GetMarkContainer()[7] );
+    EXPECT_FALSE( c.GetMarkContainer()[8] );
+    EXPECT_TRUE( c.GetMarkContainer()[9] );
+}
+
 // Setting board position
 TEST_F( CellTest, CanSetPos )
 {

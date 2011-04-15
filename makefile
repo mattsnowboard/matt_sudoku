@@ -7,10 +7,11 @@ QTINC := -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore \
 TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/SingleCandidateMethodTest.cpp test/ExclusionMethodTest.cpp \
 	test/BlockIntersectionMethodTest.cpp test/CoveringSetMethodTest.cpp \
-	test/CorrectValidatorTest.cpp
+	test/SimpleValidatorTest.cpp test/PuzzleMarkerTest.cpp
 QT_SRCS = 
 LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
-	BlockIntersectionMethod.cpp CoveringSetMethod.cpp CorrectValidator.cpp
+	BlockIntersectionMethod.cpp CoveringSetMethod.cpp SimpleValidator.cpp \
+	PuzzleMarker.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)

@@ -155,6 +155,13 @@ public:
     const MarkContainer& GetMarkContainer() const { return _marks; }
 
     /**
+     * Set or clear all Marks
+     * @param m A MarkContainer defining the Marks you want
+     * @post The Cell's marks are set to m
+     */
+    void SetMarkContainer( const MarkContainer &m );
+
+    /**
      * Get the values that are marked only
      * @note ignore mark on 0
      * @return vector of values that have marks

@@ -1,10 +1,35 @@
-#include "CorrectValidator.h"
+#include "SimpleValidator.h"
 #include "Puzzle.h"
+#include "Cell.h"
 
 namespace Sudoku
 {
 
-bool CorrectValidator::IsValid( std::shared_ptr<Puzzle> p )
+int CellCorrectChecker::operator()( const std::shared_ptr<Cell> &c ) const
+{
+    return c->GetCorrectValue();
+}
+
+int CellGuessChecker::operator()( const std::shared_ptr<Cell> &c ) const
+{
+    return c->DisplayedValue();
+}
+
+std::shared_ptr<SimpleValidator> SimpleValidator::CreateCorrectValidator()
+{
+    std::shared_ptr<CellChecker> check( new CellCorrectChecker );
+    std::shared_ptr<SimpleValidator> v( new SimpleValidator( check ) );
+    return v;
+}
+
+std::shared_ptr<SimpleValidator> SimpleValidator::CreateGuessValidator()
+{
+    std::shared_ptr<CellChecker> check( new CellGuessChecker );
+    std::shared_ptr<SimpleValidator> v( new SimpleValidator( check ) );
+    return v;
+}
+
+bool SimpleValidator::IsValid( std::shared_ptr<Puzzle> p )
 {
     // check all Sectors for 9 unique values
     
@@ -17,7 +42,7 @@ bool CorrectValidator::IsValid( std::shared_ptr<Puzzle> p )
               it != row.end();
               ++it )
         {
-            values.insert( (*it)->GetCorrectValue() );
+            values.insert( (*_checker)(*it) );
         }
         if ( values.size() != row.size() )
         {
@@ -34,7 +59,7 @@ bool CorrectValidator::IsValid( std::shared_ptr<Puzzle> p )
               it != col.end();
               ++it )
         {
-            values.insert( (*it)->GetCorrectValue() );
+            values.insert( (*_checker)(*it) );
         }
         if ( values.size() != col.size() )
         {
@@ -53,7 +78,7 @@ bool CorrectValidator::IsValid( std::shared_ptr<Puzzle> p )
                   it != block.end();
                   ++it )
             {
-                values.insert( (*it)->GetCorrectValue() );
+                values.insert( (*_checker)(*it) );
             }
             if ( values.size() != block.size() )
             {

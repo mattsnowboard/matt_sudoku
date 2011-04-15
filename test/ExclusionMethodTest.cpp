@@ -2,7 +2,6 @@
 #include "../ExclusionMethod.h"
 #include "../Puzzle.h"
 #include "gtest/gtest.h"
-#include <iostream>
 namespace {
 
 // The fixture for testing class ExclusionMethod
@@ -117,13 +116,6 @@ TEST_F( ExclusionMethodTest, ForwardOperationDoesNotAffectNonNeighbors )
     c->SetGuess( 7 );
     c->ClearMarks();
     Sudoku::Puzzle::Container All = _markedPuzzle->GetAllCells();
-    std::cout << "ALL" << std::endl;
-    for ( Sudoku::Puzzle::Container::iterator it = All.begin();
-          it != All.end();
-          ++it )
-    {
-        std::cout << **it << std::endl;
-    }
     Sudoku::Puzzle::Container N = _markedPuzzle->GetNeighbors( c );
     Sudoku::Puzzle::Container NotNeighbor;
     std::set_difference( All.begin(), All.end(),
@@ -147,12 +139,10 @@ TEST_F( ExclusionMethodTest, ForwardOperationDoesNotAffectNonNeighbors )
     }
     Sudoku::ExclusionMethod em( _markedPuzzle, c );
     em.ExecuteForward();
-    std::cout << "NOT NEIGHBORS" << std::endl;
     for ( Sudoku::Puzzle::Container::iterator it = NotNeighbor.begin();
           it != NotNeighbor.end();
           ++it )
     {
-        std::cout << **it << std::endl;
         EXPECT_TRUE( (*it)->GetMarkContainer()[1] );
         EXPECT_TRUE( (*it)->GetMarkContainer()[2] );
         EXPECT_TRUE( (*it)->GetMarkContainer()[3] );
@@ -163,12 +153,10 @@ TEST_F( ExclusionMethodTest, ForwardOperationDoesNotAffectNonNeighbors )
         EXPECT_TRUE( (*it)->GetMarkContainer()[8] );
         EXPECT_TRUE( (*it)->GetMarkContainer()[9] );
     }
-    std::cout << "*****NEIGHBORS" << std::endl;
     for ( Sudoku::Puzzle::Container::iterator it = N.begin();
           it != N.end();
           ++it )
     {
-        std::cout << **it << std::endl;
         if ( *it != c )
         {
             EXPECT_TRUE( (*it)->GetMarkContainer()[1] );

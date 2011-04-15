@@ -77,6 +77,12 @@ bool Cell::IsCorrect() const
     return _correctVal == _guessedVal && _correctVal != 0;
 }
 
+void Cell::SetMarkContainer( const Cell::MarkContainer &m )
+{
+    _marks &= m;
+    _marks |= m;
+}
+
 Cell::MarkedValues Cell::GetMarkedValues() const
 {
     MarkedValues M;

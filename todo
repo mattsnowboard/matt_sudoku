@@ -2,7 +2,7 @@
 1. Remaining Solving Methods
    D. XWingMethod
    E. XWingMethodTest
-2. Helper
+2. Helpers
    A. Given a Puzzle, find all possible ways to do any method
 3. Validator - take a puzzle with guesses and verify it is correct
    A. Guesses (not just for correct answers generated or solved)
