@@ -40,6 +40,21 @@ public:
     }
 };
 
+// functor to find if a given Cell has one of the given marks
+class CellHasGivenMarks
+    : public std::unary_function<const std::shared_ptr<Cell>, bool>
+{
+public:
+    CellHasGivenMarks( const Cell::MarkContainer &m ) : _marks( m ) {}
+    bool operator() ( const std::shared_ptr<Cell> &c ) const
+    {
+        // check if it has any marks in common
+        return (c->GetMarkContainer() & _marks).any();
+    }
+private:
+    Cell::MarkContainer _marks;
+};
+
 }
 
 SolverHelper::MethodContainer SolverHelper::GetAllSingleCandidate(
@@ -165,6 +180,8 @@ SolverHelper::MethodContainer SolverHelper::GetAllCoveringSet(
         {
             //std::cout << **first << std::endl;
             Puzzle::Container temp;
+            // need to look at the remaining Cells to find the guess
+            Puzzle::Container other;
             temp.insert( *first );
 
             for ( second = first + 1;
@@ -192,13 +209,28 @@ SolverHelper::MethodContainer SolverHelper::GetAllCoveringSet(
                         Cell::MarkContainer tempMarks = ContainerMarks( temp );
                         if ( tempMarks.count() == 4 )
                         {
-                            // ok these four work
-                            subsets.push_back( temp );
-                            //std::shared_ptr<SolutionMethod> method(
-                            //    _factory->CreateCoveringSetMethod(
-                            //        sector, temp ) );
-                            //m.push_back( method );
-                            fourTuple = true;
+                            // check that we can remove a mark from the others
+                            other.clear();
+                            std::set_difference( prunedSector.begin(),
+                                                 prunedSector.end(),
+                                                 temp.begin(),
+                                                 temp.end(),
+                                                 std::inserter( other,
+                                                                other.begin() ),
+                                                 temp.value_comp() );
+                            if ( !other.empty() )
+                            {
+                                if ( std::find_if( other.begin(),
+                                                   other.end(),
+                                                   CellHasGivenMarks(
+                                                       tempMarks ) )
+                                     != other.end() )
+                                {
+                                    // ok these four work
+                                    subsets.push_back( temp );
+                                    fourTuple = true;
+                                }
+                            }
                         }
                         // remove before going to next fourth
                         temp.erase( *fourth );
@@ -227,13 +259,29 @@ SolverHelper::MethodContainer SolverHelper::GetAllCoveringSet(
                             }
                             if ( unique )
                             {
-                                // ok these three work
-                                subsets.push_back( temp );
-                                //std::shared_ptr<SolutionMethod> method(
-                                //    _factory->CreateCoveringSetMethod(
-                                //        sector, temp ) );
-                                //m.push_back( method );
-                                triple = true;
+                                // check that we can remove a mark
+                                other.clear();
+                                std::set_difference(
+                                    prunedSector.begin(),
+                                    prunedSector.end(),
+                                    temp.begin(),
+                                    temp.end(),
+                                    std::inserter( other,
+                                                   other.begin() ),
+                                    temp.value_comp() );
+                                if ( !other.empty() )
+                                {
+                                    if ( std::find_if( other.begin(),
+                                                       other.end(),
+                                                       CellHasGivenMarks(
+                                                           tempMarks ) )
+                                         != other.end() )
+                                    {
+                                        // ok these three work
+                                        subsets.push_back( temp );
+                                        triple = true;
+                                    }
+                                }
                             }
                         }
                     }
@@ -268,12 +316,27 @@ SolverHelper::MethodContainer SolverHelper::GetAllCoveringSet(
                         }
                         if ( unique )
                         {
-                            // ok these two work
-                            subsets.push_back( temp );
-                            //std::shared_ptr<SolutionMethod> method(
-                            //    _factory->CreateCoveringSetMethod(
-                            //        sector, temp ) );
-                            //m.push_back( method );
+                            // check that we can remove a mark from the others
+                            other.clear();
+                            std::set_difference( prunedSector.begin(),
+                                                 prunedSector.end(),
+                                                 temp.begin(),
+                                                 temp.end(),
+                                                 std::inserter( other,
+                                                                other.begin() ),
+                                                 temp.value_comp() );
+                            if ( !other.empty() )
+                            {
+                                if ( std::find_if( other.begin(),
+                                                   other.end(),
+                                                   CellHasGivenMarks(
+                                                       tempMarks ) )
+                                     != other.end() )
+                                {
+                                    // ok these two work
+                                    subsets.push_back( temp );
+                                }
+                            }
                         }
                     }
                 }

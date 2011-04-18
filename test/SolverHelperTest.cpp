@@ -8,6 +8,8 @@ namespace {
 
 using ::testing::Return;
 using ::testing::_;
+using ::testing::ContainerEq;
+using ::testing::Property;
 
 class SolverHelperTest : public ::testing::Test
 {
@@ -103,6 +105,36 @@ TEST_F( SolverHelperTest, SingleCandidateReturnsManyMethods )
     EXPECT_EQ( amount, m.size() );
 }
 
+///////////// Block Intersection Method
+
+TEST_F( SolverHelperTest, BlockIntersectionReturnsNothingDefault )
+{
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 3, 8 );
+
+    EXPECT_CALL( *_factory, CreateBlockIntersectionMethod(_,_,_,_) )
+        .Times( 0 );
+
+    Sudoku::SolverHelper::MethodContainer m =
+        _helper->GetAllBlockIntersection( _puzzle, c );
+    EXPECT_TRUE( m.empty() );
+}
+
+TEST_F( SolverHelperTest, BlockIntersectionReturnsNothingIfOnlyCellMarked )
+{
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 1, 3 );
+    c->Mark( 4 );
+    c->Mark( 5 );
+    c->Mark( 6 );
+
+    EXPECT_CALL( *_factory, CreateBlockIntersectionMethod(_,_,_,_) )
+        .Times( 0 );
+
+    Sudoku::SolverHelper::MethodContainer m =
+        _helper->GetAllBlockIntersection( _puzzle, c );
+    EXPECT_TRUE( m.empty() );
+}
+
+
 ///////////// Covering Set Method
 
 TEST_F( SolverHelperTest, CoveringSetReturnsNothingDefault )
@@ -130,7 +162,7 @@ TEST_F( SolverHelperTest, CoveringSetReturnsNothingIfAllMarked )
     EXPECT_TRUE( m.empty() );
 }
 
-TEST_F( SolverHelperTest, CoveringSetReturnsSinglePair )
+TEST_F( SolverHelperTest, CoveringSetIgnoresPairIfNoMarksToRemove )
 {
     Sudoku::Puzzle::Container sector = _puzzle->GetBlock( 1, 2 );
     Sudoku::Puzzle::Container::iterator it = sector.begin();
@@ -141,29 +173,35 @@ TEST_F( SolverHelperTest, CoveringSetReturnsSinglePair )
     (*it)->Mark( 2 );
 
     EXPECT_CALL( *_factory, CreateCoveringSetMethod(_,_) )
-        .Times( 1 );
+        .Times( 0 );
 
     Sudoku::SolverHelper::MethodContainer m =
         _helper->GetAllCoveringSet( _puzzle, sector );
-    EXPECT_EQ( 1u, m.size() );
+    EXPECT_TRUE( m.empty() );
 }
 
-TEST_F( SolverHelperTest, CoveringSetReturnsSinglePairEvenDifferent )
+TEST_F( SolverHelperTest, CoveringSetReturnsPairs )
 {
-    Sudoku::Puzzle::Container sector = _puzzle->GetBlock( 2, 2 );
-    // mark one with 2 marks, and the other with 1
+    Sudoku::Puzzle::Container sector = _puzzle->GetBlock( 1, 2 );
     Sudoku::Puzzle::Container::iterator it = sector.begin();
+    (*it)->Mark( 1 );
+    (*it)->Mark( 2 );
+    ++it;
     (*it)->Mark( 1 );
     (*it)->Mark( 2 );
     ++it;
     (*it)->Mark( 1 );
 
     EXPECT_CALL( *_factory, CreateCoveringSetMethod(_,_) )
-        .Times( 1 );
+        .Times( 0 );
+    EXPECT_CALL( *_factory, CreateCoveringSetMethod(
+                     ContainerEq(sector),
+                     Property( &Sudoku::Puzzle::Container::size, 2 ) ) )
+        .Times( 3 );
 
     Sudoku::SolverHelper::MethodContainer m =
         _helper->GetAllCoveringSet( _puzzle, sector );
-    EXPECT_EQ( 1u, m.size() );
+    EXPECT_EQ( 3u, m.size() );
 }
 
 TEST_F( SolverHelperTest, CoveringSetReturnsMultiplePairs )
@@ -173,11 +211,17 @@ TEST_F( SolverHelperTest, CoveringSetReturnsMultiplePairs )
     (*it)->Mark( 1 );
     (*it)->Mark( 2 );
     ++it;
+    ++it;
+    ++it;
     (*it)->Mark( 1 );
     ++it;
     (*it)->Mark( 2 );
 
     EXPECT_CALL( *_factory, CreateCoveringSetMethod(_,_) )
+        .Times( 0 );
+    EXPECT_CALL( *_factory, CreateCoveringSetMethod(
+                     ContainerEq(sector),
+                     Property( &Sudoku::Puzzle::Container::size, 2 ) ) )
         .Times( 3 );
 
     Sudoku::SolverHelper::MethodContainer m =
@@ -185,7 +229,7 @@ TEST_F( SolverHelperTest, CoveringSetReturnsMultiplePairs )
     EXPECT_EQ( 3u, m.size() );
 }
 
-TEST_F( SolverHelperTest, CoveringSetReturnsJoinsGroupsOfThree )
+TEST_F( SolverHelperTest, CoveringSetJoinsGroupsOfThree )
 {
     Sudoku::Puzzle::Container sector = _puzzle->GetCol( 6 );
     Sudoku::Puzzle::Container::iterator it = sector.begin();
@@ -196,8 +240,19 @@ TEST_F( SolverHelperTest, CoveringSetReturnsJoinsGroupsOfThree )
     ++it;
     (*it)->Mark( 2 );
     (*it)->Mark( 3 );
+    // this one is so they have something to remove
+    ++it;
+    ++it;
+    (*it)->Mark( 1 );
+    (*it)->Mark( 7 );
+    (*it)->Mark( 8 );
+    (*it)->Mark( 9 );
 
     EXPECT_CALL( *_factory, CreateCoveringSetMethod(_,_) )
+        .Times( 0 );
+    EXPECT_CALL( *_factory, CreateCoveringSetMethod(
+                     ContainerEq(sector),
+                     Property( &Sudoku::Puzzle::Container::size, 3 ) ) )
         .Times( 1 );
 
     Sudoku::SolverHelper::MethodContainer m =
@@ -205,7 +260,7 @@ TEST_F( SolverHelperTest, CoveringSetReturnsJoinsGroupsOfThree )
     EXPECT_EQ( 1u, m.size() );
 }
 
-TEST_F( SolverHelperTest, CoveringSetReturnsJoinsGroupsOfFour )
+TEST_F( SolverHelperTest, CoveringSetJoinsGroupsOfFour )
 {
     Sudoku::Puzzle::Container sector = _puzzle->GetCol( 6 );
     Sudoku::Puzzle::Container::iterator it = sector.begin();
@@ -219,8 +274,20 @@ TEST_F( SolverHelperTest, CoveringSetReturnsJoinsGroupsOfFour )
     ++it;
     (*it)->Mark( 3 );
     (*it)->Mark( 7 );
+    // this is the one they can unmark
+    ++it;
+    ++it;
+    (*it)->Mark( 2 );
+    (*it)->Mark( 4 );
+    (*it)->Mark( 5 );
+    (*it)->Mark( 8 );
+    (*it)->Mark( 9 );
 
     EXPECT_CALL( *_factory, CreateCoveringSetMethod(_,_) )
+        .Times( 0 );
+    EXPECT_CALL( *_factory, CreateCoveringSetMethod(
+                     ContainerEq(sector),
+                     Property( &Sudoku::Puzzle::Container::size, 4 ) ) )
         .Times( 1 );
 
     Sudoku::SolverHelper::MethodContainer m =
