@@ -1,4 +1,5 @@
 GTEST_DIR = /home/matt/lib/gtest-1.5.0
+GMOCK_DIR = /home/matt/lib/gmock-1.5.0
 SRC_DIR = /home/matt/Documents/cse335/honors_option
 
 QTINC := -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore \
@@ -7,17 +8,18 @@ QTINC := -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore \
 TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/SingleCandidateMethodTest.cpp test/ExclusionMethodTest.cpp \
 	test/BlockIntersectionMethodTest.cpp test/CoveringSetMethodTest.cpp \
-	test/SimpleValidatorTest.cpp test/PuzzleMarkerTest.cpp
+	test/SimpleValidatorTest.cpp test/PuzzleMarkerTest.cpp \
+	test/PlayerValidatorTest.cpp test/SolverHelperTest.cpp
 QT_SRCS = 
 LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
 	BlockIntersectionMethod.cpp CoveringSetMethod.cpp SimpleValidator.cpp \
-	PuzzleMarker.cpp
+	PuzzleMarker.cpp PlayerValidator.cpp SolverHelper.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)
 
 # preprocessor
-CPPFLAGS += -I$(GTEST_DIR)/include -I$(SRC_DIR) $(QTINC)
+CPPFLAGS += -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include -I$(SRC_DIR) $(QTINC)
 # C++ compiler
 CXXFLAGS = -Wall -std=c++0x
 # qt defines
@@ -28,6 +30,10 @@ QTFLAGS = -L/usr/lib -lQtCore -lQtGui -lpthread
 # gtest headers, don't need to change
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
+# gmock stuff, don't need to change
+GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
+                $(GMOCK_DIR)/include/gmock/internal/*.h \
+                $(GTEST_HEADERS)
 
 MAKEDEPEND = $(CXX) $(CPPFLAGS) -MM -o $(df).d $<
 MAKEDEPEND_TEST = $(CXX) $(CPPFLAGS) -MM -o $(df).d -MT $(basename $<).o $<
@@ -45,11 +51,8 @@ all : sudoku run_tests
 sudoku : $(OBJS) $(QT_OBJS)
 	$(CXX) $(CPPFLAGS) $(QTDEF) $(CXXFLAGS) $(QTFLAGS) $^ -o $@
 
-run_tests : $(LIB_OBJS) $(TEST_OBJS) gtest.a
+run_tests : $(LIB_OBJS) $(TEST_OBJS) gtest.a gmock.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
-
-#TestRunner.o : test/TestRunner.cpp 
-#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
 
 # dependency stuff
 .D_TARGET:
@@ -60,10 +63,22 @@ run_tests : $(LIB_OBJS) $(TEST_OBJS) gtest.a
 
 # GTEST building stuff don't touch me
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 
 gtest-all.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) -c \
            $(GTEST_DIR)/src/gtest-all.cc
+
+gmock-all.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+            -c $(GMOCK_DIR)/src/gmock-all.cc
+
+gmock_main.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+            -c $(GMOCK_DIR)/src/gmock_main.cc
+
+gmock.a : gmock-all.o gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
 
 gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
@@ -85,7 +100,7 @@ gtest_main.a : gtest-all.o gtest_main.o
 	$(CXX) $(CPPFLAGS) $(QTDEF) $(CXXFLAGS) -o $@ -c $<
 
 # tests
-%Test.o : %Test.cpp .D_TARGET $(GTEST_HEADERS)
+%Test.o : %Test.cpp .D_TARGET $(GMOCK_HEADERS)
 	$(MAKEDEPEND_TEST);
 	@cp $(df).d $(df).P;
 #	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \

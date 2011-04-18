@@ -142,6 +142,23 @@ TEST_F( CellTest, IsCorrectWorks )
     EXPECT_TRUE( c.IsCorrect() );
 }
 
+// Is correct if correct answer displayed
+TEST_F( CellTest, IsCorrectIfCorrectIsDisplayed )
+{
+    Sudoku::Cell c;
+    c.SetCorrect( 5 );
+    c.Display( true );
+    EXPECT_TRUE( c.IsCorrect() );
+}
+
+// Not is correct if correct answer displayed but blank
+TEST_F( CellTest, NotIsCorrectIfCorrectDisplayedBlank )
+{
+    Sudoku::Cell c;
+    c.Display( true );
+    EXPECT_FALSE( c.IsCorrect() );
+}
+
 // Check if can guess works
 TEST_F( CellTest, CorrectlyReportsCanGuess )
 {

@@ -26,6 +26,8 @@ public:
      * @param puzzle The Puzzle to mark
      */
     virtual void UpdateMarks( std::shared_ptr<Puzzle> puzzle ) = 0;
+
+    virtual ~IPuzzleMarker() {}
 };
 
 }

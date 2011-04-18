@@ -74,7 +74,8 @@ int Cell::DisplayedValue() const
 
 bool Cell::IsCorrect() const
 {
-    return _correctVal == _guessedVal && _correctVal != 0;
+    return ( _correctVal != 0 ) &&
+        ( _correctVal == _guessedVal || _displayCorrect );
 }
 
 void Cell::SetMarkContainer( const Cell::MarkContainer &m )
@@ -120,7 +121,8 @@ std::ostream& operator<<( std::ostream &os, const Cell &c )
     return os << "Cell at (" << c._x << ", " << c._y << ")"
               << ", Correct=" << c._correctVal
               << ", Guess=" << c._guessedVal
-              << ", displayed? " << c._displayCorrect;
+              << ", displayed? " << c._displayCorrect
+              << ", marks = " << c._marks.to_string();
 }
 
 }

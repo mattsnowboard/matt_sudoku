@@ -1,4 +1,5 @@
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 int main( int argc, char** argv )
@@ -7,7 +8,7 @@ int main( int argc, char** argv )
   ::testing::GTEST_FLAG( print_time ) = false;
 
   // This allows the user to override the flag on the command line.
-  ::testing::InitGoogleTest( &argc, argv );
+  ::testing::InitGoogleMock( &argc, argv );
 
   return RUN_ALL_TESTS();
 }

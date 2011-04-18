@@ -144,7 +144,7 @@ public:
     /**
      * Check if the guessed value is correct
      * @note This will be false if _correctVal == 0
-     * @return true if _correctVal == _guessedVal != 0
+     * @return true if _correctVal == _guessedVal != 0 or correct is displayed
      */
     bool IsCorrect() const;
 

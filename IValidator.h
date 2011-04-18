@@ -24,6 +24,8 @@ public:
      * @return True if valid puzzle
      */
     virtual bool IsValid( std::shared_ptr<Puzzle> p ) = 0;
+
+    virtual ~IValidator() {}
 };
 
 }
