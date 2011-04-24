@@ -28,8 +28,19 @@ public:
     /// Container of SolutionMethod pointers
     typedef std::vector<std::shared_ptr<SolutionMethod> > MethodContainer;
 
+    /**
+     * Create with a Factory
+     * @param factory This creates the SolutionMethods (for easy testing)
+     */
     SolverHelper( std::shared_ptr<SolutionMethodFactory> factory )
         : _factory( factory ) {}
+
+    /**
+     * Accessor
+     * @return factory
+     */
+    std::shared_ptr<SolutionMethodFactory> GetFactory() const
+    { return _factory; }
 
     /**
      * Gets all Cells with only one Mark
@@ -38,7 +49,13 @@ public:
      */
     MethodContainer GetAllSingleCandidate( std::shared_ptr<Puzzle> p );
 
-    // For ExclusionMethod, we do that for when adding a guess
+    // For ExclusionMethod, we do that for when adding a guess?
+    /**
+     * Get all the Cells with a guess with neighbors we can unmark
+     * @todo This may just be something that is done with a listener
+     * @return all Cells with guesses where neighbors have that mark
+     */
+    MethodContainer GetAllExclusion( std::shared_ptr<Puzzle> p );
 
     /**
      * Get all the ways to do a block intersection for a given Cell

@@ -16,8 +16,6 @@
    D. Observe data model for changes and update view
    E. Undo/Redo
       i. Commands
-         a. Guess
-         b. Mark
          c. Clear Marks
          d. Get Mark hints
 8. Load Puzzle to solve

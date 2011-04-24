@@ -38,6 +38,23 @@ protected:
         }
     }
 
+    // make the puzzle correct with simple iteration, but every 7 is a 0
+    void MakeCorrectButWithBlanks()
+    {
+        for ( size_t i = 0; i < 9; i++ )
+        {
+            for ( size_t j = 0; j < 9; j++ )
+            {
+                std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( i+1, j+1 );
+                c->SetCorrect( (i * 3 + i / 3 + j) % 9 + 1 );
+                if ( c->GetCorrectValue() == 7 )
+                {
+                    c->SetCorrect( 0 ); // clear guess
+                }
+            }
+        }
+    }
+
     // make the puzzle correct with simple iteration
     // source: http://en.wikipedia.org/wiki/Algorithmics_of_sudoku#Solving_a_blank_Sudoku_grid
     void MakeCorrectGuess()
@@ -90,6 +107,14 @@ TEST_F( SimpleValidatorTest , CorrectValidatorReturnsFalseIfOneCellChanged )
     // increment one value
     _puzzle->GetCell( 5, 8 )->SetCorrect(
         (_puzzle->GetCell( 5, 8 )->GetCorrectValue() + 1) % 9 + 1 );
+    EXPECT_FALSE( _validator->IsValid( _puzzle ) );
+}
+
+// Test that validation returns false if there are blanks
+TEST_F( SimpleValidatorTest , CorrectValidatorReturnsFalseIfBlanks )
+{
+    _validator = Sudoku::SimpleValidator::CreateCorrectValidator();
+    MakeCorrectButWithBlanks();
     EXPECT_FALSE( _validator->IsValid( _puzzle ) );
 }
 

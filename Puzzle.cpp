@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include "StdMapIteratorAdaptor.h"
 
 namespace Sudoku
 {
@@ -95,7 +96,7 @@ Puzzle::Puzzle()
         std::shared_ptr<Cell> temp( new Cell );
         temp->SetPos( i % SECTOR_SIZE + 1,
                       i / SECTOR_SIZE + 1 );
-        _grid.insert( temp );
+        _grid.insert( std::make_pair(temp->GetPos(), temp ) );
     }
 }
 
@@ -125,7 +126,8 @@ Puzzle::Container Puzzle::GetRow( size_t r )
 {
     Cell::Validate( r, 1, 9 );
     Container row;
-    std::copy_if( _grid.begin(), _grid.end(),
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( row, row.begin() ),
                   CellInRow( r ) );
     return row;
@@ -135,7 +137,8 @@ Puzzle::Container Puzzle::GetCol( size_t c )
 {
     Cell::Validate( c, 1, 9 );
     Container col;
-    std::copy_if( _grid.begin(), _grid.end(),
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( col, col.begin() ),
                   CellInCol( c ) );
     return col;
@@ -146,7 +149,8 @@ Puzzle::Container Puzzle::GetBlock( size_t x, size_t y )
     Cell::Validate( x, 1, 3 );
     Cell::Validate( y, 1, 3 );
     Container block;
-    std::copy_if( _grid.begin(), _grid.end(),
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( block, block.begin() ),
                   CellInBlock( x, y ) );
     return block;
@@ -162,14 +166,13 @@ std::shared_ptr<Cell> Puzzle::GetCell( size_t x, size_t y )
 {
     Cell::Validate( x, 1, 9 );
     Cell::Validate( y, 1, 9 );
-    std::shared_ptr<Cell> target( new Cell );
-    target->SetPos( x, y );
-    Container::iterator found = _grid.find( target );
+    Position p( x , y);
+    CellMap::iterator found = _grid.find( p );
     if ( found == _grid.end() )
     {
         throw std::logic_error( "Could not find given cell in Puzzle" );
     }
-    return (*found);
+    return ( found->second );
 }
 
 Puzzle::Container Puzzle::GetNeighbors( std::shared_ptr<Cell> c )
@@ -185,24 +188,38 @@ Puzzle::Container Puzzle::GetNeighbors( size_t x, size_t y )
     Cell::Validate( y, 1, 9 );
     // this should be large enough to hold all neighbors after removing overlap
     Puzzle::Container N;
-    std::copy_if( _grid.begin(), _grid.end(),
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( N, N.begin() ),
                   CellIsNeighbor( x, y ) );
     // N.erase( c );
     return N;
 }
 
+Puzzle::ConstContainer Puzzle::GetAllCells() const
+{
+    ConstContainer c;
+    std::copy( make_map_iterator_adaptor( _grid.begin() ), 
+               make_map_iterator_adaptor( _grid.end() ),
+               std::inserter( c, c.begin() ) );
+    return c;
+}
+
 Puzzle::Container Puzzle::GetAllCells()
 {
-    return _grid;
+    Container c;
+    std::copy( make_map_iterator_adaptor( _grid.begin() ),
+               make_map_iterator_adaptor( _grid.end() ),
+               std::inserter( c, c.begin() ) );
+    return c;
 }
 
 bool Puzzle::operator==( const Puzzle &p ) const
 {
     return ( p._grid.size() == _grid.size() &&
-             std::equal( _grid.begin(),
-                         _grid.end(),
-                         p._grid.begin(),
+             std::equal( make_map_iterator_adaptor( _grid.begin() ),
+                         make_map_iterator_adaptor( _grid.end() ),
+                         make_map_iterator_adaptor( p._grid.begin() ),
                          CompareCell() ) );
 }
 

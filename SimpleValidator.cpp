@@ -42,7 +42,10 @@ bool SimpleValidator::IsValid( std::shared_ptr<Puzzle> p )
               it != row.end();
               ++it )
         {
-            values.insert( (*_checker)(*it) );
+            if ( (*_checker)(*it) != 0 )
+            {
+                values.insert( (*_checker)(*it) );
+            }
         }
         if ( values.size() != row.size() )
         {
@@ -59,7 +62,10 @@ bool SimpleValidator::IsValid( std::shared_ptr<Puzzle> p )
               it != col.end();
               ++it )
         {
-            values.insert( (*_checker)(*it) );
+            if ( (*_checker)(*it) != 0 )
+            {
+                values.insert( (*_checker)(*it) );
+            }
         }
         if ( values.size() != col.size() )
         {
@@ -78,7 +84,10 @@ bool SimpleValidator::IsValid( std::shared_ptr<Puzzle> p )
                   it != block.end();
                   ++it )
             {
-                values.insert( (*_checker)(*it) );
+                if ( (*_checker)(*it) != 0 )
+                {
+                    values.insert( (*_checker)(*it) );
+                }
             }
             if ( values.size() != block.size() )
             {

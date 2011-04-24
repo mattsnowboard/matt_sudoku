@@ -105,6 +105,44 @@ TEST_F( SolverHelperTest, SingleCandidateReturnsManyMethods )
     EXPECT_EQ( amount, m.size() );
 }
 
+///////////// Exclusion Method
+
+TEST_F( SolverHelperTest, ExclusionReturnsNothingDefault )
+{
+    EXPECT_CALL( *_factory, CreateExclusionMethod(_,_) )
+        .Times( 0 );
+
+    Sudoku::SolverHelper::MethodContainer m =
+        _helper->GetAllExclusion( _puzzle );
+    EXPECT_TRUE( m.empty() );
+}
+
+TEST_F( SolverHelperTest, ExclusionReturnsGuessedCell )
+{
+    _marker->UpdateMarks( _puzzle );
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 3, 1 );
+    c->SetGuess( 3 );
+    EXPECT_CALL( *_factory, CreateExclusionMethod( _puzzle, c) )
+        .Times( 1 );
+
+    Sudoku::SolverHelper::MethodContainer m =
+        _helper->GetAllExclusion( _puzzle );
+    EXPECT_EQ( 1u, m.size() );
+}
+
+TEST_F( SolverHelperTest, ExclusionDoesNotReturnGuessedCellIfNeighborsUnmark )
+{
+    std::shared_ptr<Sudoku::Cell> c = _puzzle->GetCell( 8, 1 );
+    c->SetGuess( 3 );
+    _marker->UpdateMarks( _puzzle );
+    EXPECT_CALL( *_factory, CreateExclusionMethod(_,_) )
+        .Times( 0 );
+
+    Sudoku::SolverHelper::MethodContainer m =
+        _helper->GetAllExclusion( _puzzle );
+    EXPECT_TRUE( m.empty() );
+}
+
 ///////////// Block Intersection Method
 
 TEST_F( SolverHelperTest, BlockIntersectionReturnsNothingDefault )
@@ -134,6 +172,7 @@ TEST_F( SolverHelperTest, BlockIntersectionReturnsNothingIfOnlyCellMarked )
     EXPECT_TRUE( m.empty() );
 }
 
+// @todo Test this more
 
 ///////////// Covering Set Method
 

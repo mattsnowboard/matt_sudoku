@@ -77,6 +77,36 @@ SolverHelper::MethodContainer SolverHelper::GetAllSingleCandidate(
     return m;
 }
 
+SolverHelper::MethodContainer SolverHelper::GetAllExclusion(
+    std::shared_ptr<Puzzle> p )
+{
+    MethodContainer m;
+    Puzzle::Container all = p->GetAllCells();
+    for ( Puzzle::Container::iterator it = all.begin(); it != all.end(); ++it )
+    {
+        if ( (*it)->CanGuess() && (*it)->DisplayedValue() != 0 )
+        {
+            // need to check neighbors
+            Puzzle::Container N = p->GetNeighbors( *it );
+            int guess = (*it)->DisplayedValue();
+            for ( Puzzle::Container::iterator it2 = N.begin();
+                  it2 != N.end();
+                  ++it2 )
+            {
+                if ( (*it2)->CanGuess() && (*it2)->GetMarkContainer()[guess] )
+                {
+                    std::shared_ptr<SolutionMethod> exclusion(
+                        _factory->CreateExclusionMethod( p, *it ) );
+                    m.push_back( exclusion );
+                    break;
+                }
+            }
+        }
+    }
+
+    return m;
+}
+
 SolverHelper::MethodContainer SolverHelper::GetAllBlockIntersection(
     std::shared_ptr<Puzzle> p,
     std::shared_ptr<Cell> c )

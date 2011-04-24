@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <valarray>
+#include <map>
 #include "Cell.h"
 
 namespace Sudoku
@@ -38,6 +39,8 @@ public:
 
     /// This is the container type we use for holding Cells internally
     typedef std::set<std::shared_ptr<Cell>, CellSorter> Container;
+    typedef std::set<std::shared_ptr<const Cell>, CellSorter> ConstContainer;
+    typedef std::map<Position, std::shared_ptr<Cell> > CellMap;
 
     /**
      * Create a blank board with all positions of Cells set
@@ -131,6 +134,12 @@ public:
     Container GetAllCells();
 
     /**
+     * Get all of the Cells in the grid
+     * @return all Cells in a container
+     */
+    ConstContainer GetAllCells() const;
+
+    /**
      * Check if two puzzles contain the exact same grid
      * @param p Other puzzle to compare
      * @return true if every Cell in each grid is the same
@@ -147,7 +156,8 @@ private:
 //    Cell _grid[9][9];
     static const size_t ARRAY_SIZE = 81;
     static const size_t SECTOR_SIZE = 9;
-    Container _grid;
+    CellMap _grid;
+    //Container _grid;
 
 };
 

@@ -9,11 +9,14 @@ TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/SingleCandidateMethodTest.cpp test/ExclusionMethodTest.cpp \
 	test/BlockIntersectionMethodTest.cpp test/CoveringSetMethodTest.cpp \
 	test/SimpleValidatorTest.cpp test/PuzzleMarkerTest.cpp \
-	test/PlayerValidatorTest.cpp test/SolverHelperTest.cpp
+	test/PlayerValidatorTest.cpp test/SolverHelperTest.cpp \
+	test/GuessCommandTest.cpp test/MarkCommandTest.cpp \
+	test/UnmarkCommandTest.cpp test/MethodSolverTest.cpp
 QT_SRCS = 
 LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
 	BlockIntersectionMethod.cpp CoveringSetMethod.cpp SimpleValidator.cpp \
-	PuzzleMarker.cpp PlayerValidator.cpp SolverHelper.cpp
+	PuzzleMarker.cpp PlayerValidator.cpp SolverHelper.cpp GuessCommand.cpp \
+	MarkCommand.cpp UnmarkCommand.cpp MethodSolver.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)

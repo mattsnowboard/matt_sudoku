@@ -7,8 +7,7 @@ namespace Sudoku
 {
 
 Cell::Cell()
-    : _x( 0 ),
-      _y( 0 ),
+    : _pos( 0, 0 ),
       _correctVal( 0 ),
       _guessedVal( 0 ),
       _displayCorrect( false )
@@ -23,8 +22,7 @@ Cell& Cell::operator=( const Cell &c )
 {
     if ( this != &c )
     {
-        _x = c._x;
-        _y = c._y;
+        _pos = c._pos;
         _correctVal = c._correctVal;
         _guessedVal = c._guessedVal;
         _displayCorrect = c._displayCorrect;
@@ -37,8 +35,15 @@ void Cell::SetPos( size_t x, size_t y )
 {
     Validate( x, 1, 9 );
     Validate( y, 1, 9 );
-    _x = x;
-    _y = y;
+    _pos.x = x;
+    _pos.y = y;
+}
+
+void Cell::SetPos( Position p )
+{
+    Validate( p.x, 1, 9 );
+    Validate( p.y, 1, 9 );
+    _pos = p;
 }
 
 void Cell::SetCorrect( int correct )
@@ -108,8 +113,8 @@ void Cell::Accept( Visitor& v )
 
 bool Cell::operator==( const Cell& c ) const
 {
-    return ( c._x == _x &&
-             c._y == _y &&
+    return ( c._pos.x == _pos.x &&
+             c._pos.y == _pos.y &&
              c._correctVal == _correctVal &&
              c._guessedVal == _guessedVal &&
              c._displayCorrect == _displayCorrect &&
@@ -118,7 +123,7 @@ bool Cell::operator==( const Cell& c ) const
 
 std::ostream& operator<<( std::ostream &os, const Cell &c )
 {
-    return os << "Cell at (" << c._x << ", " << c._y << ")"
+    return os << "Cell at (" << c._pos.x << ", " << c._pos.y << ")"
               << ", Correct=" << c._correctVal
               << ", Guess=" << c._guessedVal
               << ", displayed? " << c._displayCorrect

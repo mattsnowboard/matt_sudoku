@@ -10,6 +10,18 @@ namespace Sudoku
 
 class Visitor;
 
+struct Position
+{
+    Position( size_t x_ = 0, size_t y_ = 0 ) : x( x_ ), y( y_ ) {}
+    size_t x;
+    size_t y;
+
+    bool operator<( const Position &p ) const
+    {
+        return ( ( y < p.y ) || ( y == p.y && x < p.x ) );
+    }
+};
+
 /**
  * Cell in a Sudoku board
  * Each cell can hold a value 1 through 9 (or 0 for blank)
@@ -52,16 +64,28 @@ public:
     void SetPos( size_t x, size_t y );
 
     /**
+     * Set the position of the Cell on the board
+     * @param p x,y coordinate for column and row
+     * @pre x,y are each in range(1,9)
+     */
+    void SetPos( Position p );
+
+    /**
      * Get Cell's x position (column) on board
      * @return x
      */
-    size_t GetX() const { return _x; }
+    size_t GetX() const { return _pos.x; }
 
     /**
      * Get Cell's y position (row) on board
      * @return y
      */
-    size_t GetY() const { return _y; }
+    size_t GetY() const { return _pos.y; }
+
+    /**
+     * Get Cell's x and y position on board
+     */
+    Position GetPos() const { return _pos; }
 
     /**
      * Set the Correct value
@@ -203,10 +227,8 @@ private:
      */
     friend std::ostream& operator<<( std::ostream &os, const Cell &c );
 
-    /// x location on the Sudoku board {1...9}
-    size_t _x;
-    /// y location on the Sudoku board {1...9}
-    size_t _y;
+    /// x,y location on the Sudoku board {1...9}
+    Position _pos;
     /// The correct value for this Cell which a user should try to guess
     int _correctVal;
     /// The value that a user has guessed
