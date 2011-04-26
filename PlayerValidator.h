@@ -22,6 +22,10 @@ public:
      * @return True if valid puzzle (based on what is displayed only
      */
     virtual bool IsValid( std::shared_ptr<Puzzle> p );
+
+private:
+    PlayerValidator( const PlayerValidator & );
+    PlayerValidator & operator=( const PlayerValidator & );
 };
 
 }

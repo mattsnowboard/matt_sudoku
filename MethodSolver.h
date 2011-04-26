@@ -52,6 +52,9 @@ public:
     /// cells to begin with
     static const unsigned MIN_CORRECT_VALUES = 17;
 private:
+    MethodSolver( const MethodSolver & );
+    MethodSolver & operator=( const MethodSolver & );
+
     /// Helper to get possible Methods
     std::shared_ptr<SolverHelper> _helper;
     /// Sets marks appropriately

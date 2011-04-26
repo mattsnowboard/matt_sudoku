@@ -22,11 +22,19 @@ public:
                       std::shared_ptr<IPuzzleAccess> access,
                       std::shared_ptr<IPuzzleMarker> marker );
 
+    /**
+     * Mark all Cells with their possible values to give hints to user
+     * @post Cells are marked appropriately
+     * @note undoable
+     */
     void MarkHints();
 
     ~PuzzleController() {}
 
 private:
+    PuzzleController( const PuzzleController & );
+    PuzzleController& operator=( const PuzzleController & );
+
     /// Executes commands
     std::shared_ptr<ICommandExecutor> _executor;
     /// get the pointer to the Puzzle

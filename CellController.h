@@ -50,6 +50,9 @@ public:
     ~CellController() {}
 
 private:
+    CellController( const CellController & );
+    CellController& operator=( const CellController & );
+
     /// Executes commands
     std::shared_ptr<ICommandExecutor> _executor;
     /// get the pointer to the Puzzle

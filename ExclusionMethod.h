@@ -52,6 +52,9 @@ public:
     virtual ~ExclusionMethod() {}
 
 private:
+    ExclusionMethod( const ExclusionMethod & );
+    ExclusionMethod & operator=( const ExclusionMethod & );
+
     Puzzle::Container _neighbors;
     std::shared_ptr<Cell> _cell;
     int _guessVal;

@@ -26,7 +26,7 @@ public:
 
     virtual ~GuessCommand() {}
 
-private:
+protected:
     /**
      * Create the Command
      * @param cell The Cell to issue a guess on
@@ -53,6 +53,9 @@ private:
     virtual bool unexecute( std::shared_ptr<Cell> c );
 
 private:
+    GuessCommand( const GuessCommand & );
+    GuessCommand & operator=( const GuessCommand & );
+
     /// The value we want to guess
     int _newGuess;
     /// The previous value for undo

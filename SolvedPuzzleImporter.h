@@ -48,6 +48,9 @@ public:
      */
     virtual ~SolvedPuzzleImporter() {}
 private:
+    SolvedPuzzleImporter( const SolvedPuzzleImporter & );
+    SolvedPuzzleImporter & operator=( const SolvedPuzzleImporter & );
+
     char _show;
     char _hide;
 };

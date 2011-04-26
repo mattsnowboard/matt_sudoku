@@ -49,6 +49,10 @@ public:
      * 
      */
     virtual ~SimplePuzzleImporter() {}
+
+private:
+    SimplePuzzleImporter( const SimplePuzzleImporter & );
+    SimplePuzzleImporter & operator=( const SimplePuzzleImporter & );
 };
 
 }

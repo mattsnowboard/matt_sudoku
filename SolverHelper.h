@@ -82,6 +82,9 @@ public:
                                        const Puzzle::Container &sector );
 
 private:
+    SolverHelper( const SolverHelper & );
+    SolverHelper & operator=( const SolverHelper & );
+
     std::shared_ptr<SolutionMethodFactory> _factory;
 };
 

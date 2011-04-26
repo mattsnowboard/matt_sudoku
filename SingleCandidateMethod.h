@@ -49,6 +49,9 @@ public:
     virtual ~SingleCandidateMethod() {}
 
 private:
+    SingleCandidateMethod( const SingleCandidateMethod & );
+    SingleCandidateMethod & operator=( const SingleCandidateMethod & );
+
     std::shared_ptr<Cell> _cell;
 };
 

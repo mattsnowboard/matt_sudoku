@@ -28,7 +28,7 @@ public:
 
     virtual ~AddHintMarksCommand() {}
 
-private:
+protected:
     /**
      * Create the Command
      * @param puzzle The Puzzle to add hint marks to
@@ -55,6 +55,9 @@ private:
     virtual bool unexecute( std::shared_ptr<Puzzle> p );
 
 private:
+    AddHintMarksCommand( const AddHintMarksCommand & );
+    AddHintMarksCommand & operator=( const AddHintMarksCommand & );
+
     /// Marker can add hints
     std::shared_ptr<IPuzzleMarker> _marker;
     /// Need to store old values (Memento)

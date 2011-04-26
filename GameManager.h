@@ -72,10 +72,25 @@ public:
      */
     virtual bool Redo();
 
+    /**
+     * Double dispatch on Cell Commands
+     * Gets pointer to non-const Cell and executes
+     * @param c Command to execute
+     */
     virtual void HandleCommand( Command<Cell> &c );
 
+    /**
+     * Double dispatch on Puzzle Commands
+     * Gets pointer to non-const Puzzle and executes
+     * @param c Command to execute
+     */
     virtual void HandleCommand( Command<Puzzle> &p );
 
+    /**
+     * Double Dispatch default
+     * This is an unknown type of command
+     * @throw Always
+     */
     virtual void HandleCommand( CommandBase &b );
 
     /**
@@ -87,6 +102,9 @@ public:
     virtual ~GameManager() {}
 
 private:
+    GameManager( const GameManager & );
+    GameManager & operator=( const GameManager & );
+
     /// Keep track of the last command executed
     bool _lastExecuted;
     /// Keep track of what action to do when double dispatching

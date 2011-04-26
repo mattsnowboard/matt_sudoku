@@ -67,6 +67,9 @@ private:
     void verifyGeometry();
 
 private:
+    BlockIntersectionMethod( const BlockIntersectionMethod & );
+    BlockIntersectionMethod & operator=( const BlockIntersectionMethod & );
+
     /// Cell we are looking at
     std::shared_ptr<Cell> _cell;
     /// The mark we are using

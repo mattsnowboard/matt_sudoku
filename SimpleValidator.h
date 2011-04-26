@@ -62,6 +62,9 @@ public:
     virtual bool IsValid( std::shared_ptr<Puzzle> p );
 
 private:
+    SimpleValidator( const SimpleValidator & );
+    SimpleValidator & operator=( const SimpleValidator & );
+
     SimpleValidator( std::shared_ptr<CellChecker> check )
         : _checker( check ) {}
 

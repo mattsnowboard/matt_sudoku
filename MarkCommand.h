@@ -26,7 +26,7 @@ public:
 
     virtual ~MarkCommand() {}
 
-private:
+protected:
     /**
      * Create the Command
      * @param cell The Cell to mark
@@ -53,6 +53,9 @@ private:
     virtual bool unexecute( std::shared_ptr<Cell> c );
 
 private:
+    MarkCommand( const MarkCommand & );
+    MarkCommand & operator=( const MarkCommand & );
+
     /// The value we want to mark
     int _mark;
     /// The previous state of the mark

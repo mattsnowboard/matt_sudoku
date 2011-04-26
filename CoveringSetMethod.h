@@ -56,6 +56,9 @@ public:
     virtual ~CoveringSetMethod() {}
 
 private:
+    CoveringSetMethod( const CoveringSetMethod & );
+    CoveringSetMethod & operator=( const CoveringSetMethod & );
+
     Puzzle::Container _sector;
     Puzzle::Container _subset;
     Puzzle::Container _diff;
