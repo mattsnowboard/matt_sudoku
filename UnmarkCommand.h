@@ -12,7 +12,7 @@ class Cell;
 /**
  * Unmark Command to remove a mark from a Cell
  */
-class UnmarkCommand : public Command
+class UnmarkCommand : public Command<Cell>
 {
 public:
 
@@ -21,8 +21,8 @@ public:
      * @param cell The Cell to unmark
      * @param mark The value to unmark
      */
-    static std::shared_ptr<Command> CreateUnmarkCommand(
-        std::shared_ptr<Cell> cell, int mark );
+    static std::shared_ptr<Command<Cell> > CreateUnmarkCommand(
+        std::shared_ptr<const Cell> cell, int mark );
 
     virtual ~UnmarkCommand() {}
 
@@ -32,15 +32,16 @@ private:
      * @param cell The Cell to unmark
      * @param mark The value to unmark
      */
-    UnmarkCommand( std::shared_ptr<Cell> cell, int mark );
+    UnmarkCommand( std::shared_ptr<const Cell> cell, int mark );
 
     /**
      * Unmark the given value on the Cell, store the old value
      * @pre we can execute
+     * @param c Non-const Cell we can modify
      * @return Success or Failure
      * @post we can unexecute
      */
-    virtual bool execute();
+    virtual bool execute( std::shared_ptr<Cell> c );
 
     /**
      * Mark the given value on the Cell if we had removed the mark
@@ -48,11 +49,9 @@ private:
      * @return Success or Failure
      * @post we can execute
      */
-    virtual bool unexecute();
+    virtual bool unexecute( std::shared_ptr<Cell> c );
 
 private:
-    /// Cell we are acting upon
-    std::shared_ptr<Cell> _cell;
     /// The value we want to mark
     int _mark;
     /// The previous state of the mark

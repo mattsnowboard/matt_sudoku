@@ -79,12 +79,28 @@ public:
     Container GetRow( size_t r );
 
     /**
+     * Get a row by index, const version
+     * @param r Row number
+     * @pre r is in range [1,9]
+     * @return vector of Cell's in the given row
+     */
+    ConstContainer GetRow( size_t r ) const;
+
+    /**
      * Get a column by index
      * @param c Column number
      * @pre c is in range [1,9]
      * @return vector of Cell's in the given column
      */
     Container GetCol( size_t c );
+
+    /**
+     * Get a column by index, const version
+     * @param c Column number
+     * @pre c is in range [1,9]
+     * @return vector of Cell's in the given column
+     */
+    ConstContainer GetCol( size_t c ) const;
     
     /**
      * Get a 3 by 3 block by coordinate
@@ -96,10 +112,26 @@ public:
     Container GetBlock( size_t x, size_t y );
 
     /**
+     * Get a 3 by 3 block by coordinate, const version
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @pre x, y are each in range [1,3]
+     * @return vector of Cell's in the given block
+     */
+    ConstContainer GetBlock( size_t x, size_t y ) const;
+
+    /**
      * Figures out which block to get for a given Cell
      * @overload Container GetBlock( size_t x, size_t y )
      */
     Container GetBlock( std::shared_ptr<Cell> c );
+
+    /**
+     * Get a 3 by 3 block, const version
+     * Figures out which block to get for a given Cell
+     * @overload Container GetBlock( size_t x, size_t y )
+     */
+    ConstContainer GetBlock( std::shared_ptr<const Cell> c ) const;
     
     /**
      * Get a cell by position
@@ -111,6 +143,23 @@ public:
     std::shared_ptr<Cell> GetCell( size_t x, size_t y );
 
     /**
+     * Get a cell by position, const version
+     * @param x X coordinate of Cell (starting from 1)
+     * @param y Y coordinate of Cell (starting from 1)n
+     * @pre x and y are both in range [1,9]
+     * @return a const pointer to the Cell at the given position
+     */
+    std::shared_ptr<const Cell> GetCell( size_t x, size_t y ) const;
+
+    /**
+     * Get a cell from a const Cell
+     * @param c Cell we have as const pointer which we want non-const
+     * @pre c is in Puzzle
+     * @return a pointer (can modify) to the Cell at the given position
+     */
+    std::shared_ptr<Cell> GetCell( std::shared_ptr<const Cell> c );
+
+    /**
      * Get all of the neighbors of a given Cell
      * This is equivalent to forming the union of a Cell's row, column, and 
      * block
@@ -120,12 +169,29 @@ public:
     Container GetNeighbors( std::shared_ptr<Cell> c );
 
     /**
+     * Get all of the neighbors of a given Cell, const version
+     * This is equivalent to forming the union of a Cell's row, column, and 
+     * block
+     * @param c The Cell positioned in the grid
+     * @return a vector of Cell's neighboring c (same row, column, or block)
+     */
+    ConstContainer GetNeighbors( std::shared_ptr<const Cell> c ) const;
+
+    /**
      * Get all of the neighbors of a given Cell by position
      * @param x X coordinate of Cell
      * @param y Y coordinate of Cell
      * @overload Container GetNeighbors( std::shared_ptr<Cell> c )
      */
     Container GetNeighbors( size_t x, size_t y );
+
+    /**
+     * Get all of the neighbors of a given Cell by position, const version
+     * @param x X coordinate of Cell
+     * @param y Y coordinate of Cell
+     * @overload Container GetNeighbors( std::shared_ptr<Cell> c )
+     */
+    ConstContainer GetNeighbors( size_t x, size_t y ) const;
 
     /**
      * Get all of the Cells in the grid

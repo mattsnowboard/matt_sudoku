@@ -5,38 +5,38 @@
 namespace Sudoku
 {
 
-std::shared_ptr<Command> MarkCommand::CreateMarkCommand(
-    std::shared_ptr<Cell> cell, int mark )
+std::shared_ptr<Command<Cell> > MarkCommand::CreateMarkCommand(
+    std::shared_ptr<const Cell> cell, int mark )
 {
-    std::shared_ptr<Command> c( new MarkCommand( cell, mark ) );
+    std::shared_ptr<Command<Cell> > c( new MarkCommand( cell, mark ) );
     return c;
 }
 
-MarkCommand::MarkCommand( std::shared_ptr<Cell> cell, int mark )
-    : _cell( cell ), _mark( mark )
+MarkCommand::MarkCommand( std::shared_ptr<const Cell> cell, int mark )
+    : Command<Cell>( cell ), _mark( mark )
 {}
 
-bool MarkCommand::execute()
+bool MarkCommand::execute( std::shared_ptr<Cell> c )
 {
-    if ( _cell->CanGuess() )
+    if ( c->CanGuess() )
     {
-        _wasMarked = _cell->GetMarkContainer()[_mark];
+        _wasMarked = c->GetMarkContainer()[_mark];
         if ( !_wasMarked )
         {
-            _cell->Mark( _mark );
+            c->Mark( _mark );
             return true;
         }
     }
     return false;
 }
 
-bool MarkCommand::unexecute()
+bool MarkCommand::unexecute( std::shared_ptr<Cell> c )
 {
-    if ( _cell->CanGuess() )
+    if ( c->CanGuess() )
     {
         if ( !_wasMarked )
         {
-            _cell->Unmark( _mark );
+            c->Unmark( _mark );
             return true;
         }
     }

@@ -12,13 +12,15 @@ TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/PlayerValidatorTest.cpp test/SolverHelperTest.cpp \
 	test/GuessCommandTest.cpp test/MarkCommandTest.cpp \
 	test/UnmarkCommandTest.cpp test/MethodSolverTest.cpp \
-	test/SimplePuzzleImporterTest.cpp test/SolvedPuzzleImporterTest.cpp
+	test/SimplePuzzleImporterTest.cpp test/SolvedPuzzleImporterTest.cpp \
+	test/AddHintMarksCommandTest.cpp
 QT_SRCS = 
 LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
 	BlockIntersectionMethod.cpp CoveringSetMethod.cpp SimpleValidator.cpp \
 	PuzzleMarker.cpp PlayerValidator.cpp SolverHelper.cpp GuessCommand.cpp \
 	MarkCommand.cpp UnmarkCommand.cpp MethodSolver.cpp \
-	SimplePuzzleImporter.cpp SolvedPuzzleImporter.cpp
+	SimplePuzzleImporter.cpp SolvedPuzzleImporter.cpp GameManager.cpp \
+	CellController.cpp AddHintMarksCommand.cpp GameController.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)

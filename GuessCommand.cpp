@@ -5,34 +5,34 @@
 namespace Sudoku
 {
 
-std::shared_ptr<Command> GuessCommand::CreateGuessCommand(
-    std::shared_ptr<Cell> cell, int guess )
+std::shared_ptr<Command<Cell> > GuessCommand::CreateGuessCommand(
+    std::shared_ptr<const Cell> cell, int guess )
 {
-    std::shared_ptr<Command> c( new GuessCommand( cell, guess ) );
+    std::shared_ptr<Command<Cell> > c( new GuessCommand( cell, guess ) );
     return c;
 }
 
-GuessCommand::GuessCommand( std::shared_ptr<Cell> cell, int guess )
-    : _cell( cell ), _newGuess( guess )
+GuessCommand::GuessCommand( std::shared_ptr<const Cell> cell, int guess )
+    : Command<Cell>( cell ), _newGuess( guess )
 {}
 
-bool GuessCommand::execute()
+bool GuessCommand::execute( std::shared_ptr<Cell> c )
 {
-    bool success = _cell->CanGuess();
+    bool success = c->CanGuess();
     if ( success )
     {
-        _oldGuess = _cell->DisplayedValue();
-        _cell->SetGuess( _newGuess );
+        _oldGuess = c->DisplayedValue();
+        c->SetGuess( _newGuess );
     }
     return success;
 }
 
-bool GuessCommand::unexecute()
+bool GuessCommand::unexecute( std::shared_ptr<Cell> c )
 {
-    bool success = _cell->CanGuess();
+    bool success = c->CanGuess();
     if ( success )
     {
-        _cell->SetGuess( _oldGuess );
+        c->SetGuess( _oldGuess );
     }
     return success;
 }

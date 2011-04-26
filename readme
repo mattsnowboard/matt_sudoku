@@ -1,0 +1,15 @@
+--------------------------------------------------------------------------------
+BUILDING:
+
+To build this project, you must have GoogleMock and GoogleTest version 1.5
+available.  Please update the makefile with the appropriate directory paths.
+
+You must also have Qt4 installed.
+
+This project has been tested with gcc 4.4, but should work with gcc 4.3
+
+--------------------------------------------------------------------------------
+RUNNING:
+
+Currently, there is no GUI, the only thing this will produce is an executable
+"run_tests" which will run all of the unit tests.

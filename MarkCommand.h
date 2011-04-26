@@ -12,7 +12,7 @@ class Cell;
 /**
  * Mark Command to add a mark to a Cell
  */
-class MarkCommand : public Command
+class MarkCommand : public Command<Cell>
 {
 public:
 
@@ -21,8 +21,8 @@ public:
      * @param cell The Cell to mark
      * @param mark The value to mark
      */
-    static std::shared_ptr<Command> CreateMarkCommand(
-        std::shared_ptr<Cell> cell, int mark );
+    static std::shared_ptr<Command<Cell> > CreateMarkCommand(
+        std::shared_ptr<const Cell> cell, int mark );
 
     virtual ~MarkCommand() {}
 
@@ -32,27 +32,27 @@ private:
      * @param cell The Cell to mark
      * @param guess The value to mark
      */
-    MarkCommand( std::shared_ptr<Cell> cell, int mark );
+    MarkCommand( std::shared_ptr<const Cell> cell, int mark );
 
     /**
      * Mark the given value on the Cell, store the old value
      * @pre we can execute
+     * @param non-const Cell to execute on
      * @return Success or Failure
      * @post we can unexecute
      */
-    virtual bool execute();
+    virtual bool execute( std::shared_ptr<Cell> c );
 
     /**
      * Unmark the given value on the Cell if we had placed the mark
      * @pre we can unexecute
+     * @param non-const Cell to execute on
      * @return Success or Failure
      * @post we can execute
      */
-    virtual bool unexecute();
+    virtual bool unexecute( std::shared_ptr<Cell> c );
 
 private:
-    /// Cell we are acting upon
-    std::shared_ptr<Cell> _cell;
     /// The value we want to mark
     int _mark;
     /// The previous state of the mark

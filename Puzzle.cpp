@@ -119,7 +119,7 @@ Puzzle& Puzzle::operator=( const Puzzle &p )
 
 void Puzzle::Randomize()
 {
-
+    throw std::runtime_error( "NOT IMPLEMENTED" );
 }
 
 Puzzle::Container Puzzle::GetRow( size_t r )
@@ -133,10 +133,32 @@ Puzzle::Container Puzzle::GetRow( size_t r )
     return row;
 }
 
+Puzzle::ConstContainer Puzzle::GetRow( size_t r ) const
+{
+    Cell::Validate( r, 1, 9 );
+    ConstContainer row;
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
+                  std::inserter( row, row.begin() ),
+                  CellInRow( r ) );
+    return row;
+}
+
 Puzzle::Container Puzzle::GetCol( size_t c )
 {
     Cell::Validate( c, 1, 9 );
     Container col;
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
+                  std::inserter( col, col.begin() ),
+                  CellInCol( c ) );
+    return col;
+}
+
+Puzzle::ConstContainer Puzzle::GetCol( size_t c ) const
+{
+    Cell::Validate( c, 1, 9 );
+    ConstContainer col;
     std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
                   make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( col, col.begin() ),
@@ -156,7 +178,25 @@ Puzzle::Container Puzzle::GetBlock( size_t x, size_t y )
     return block;
 }
 
+Puzzle::ConstContainer Puzzle::GetBlock( size_t x, size_t y ) const
+{
+    Cell::Validate( x, 1, 3 );
+    Cell::Validate( y, 1, 3 );
+    ConstContainer block;
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
+                  std::inserter( block, block.begin() ),
+                  CellInBlock( x, y ) );
+    return block;
+}
+
 Puzzle::Container Puzzle::GetBlock( std::shared_ptr<Cell> c )
+{
+    return GetBlock( ( c->GetX() - 1 ) / 3 + 1,
+                     ( c->GetY() - 1 ) / 3 + 1 );
+}
+
+Puzzle::ConstContainer Puzzle::GetBlock( std::shared_ptr<const Cell> c ) const
 {
     return GetBlock( ( c->GetX() - 1 ) / 3 + 1,
                      ( c->GetY() - 1 ) / 3 + 1 );
@@ -166,8 +206,31 @@ std::shared_ptr<Cell> Puzzle::GetCell( size_t x, size_t y )
 {
     Cell::Validate( x, 1, 9 );
     Cell::Validate( y, 1, 9 );
-    Position p( x , y);
+    Position p( x, y );
     CellMap::iterator found = _grid.find( p );
+    if ( found == _grid.end() )
+    {
+        throw std::logic_error( "Could not find given cell in Puzzle" );
+    }
+    return ( found->second );
+}
+
+std::shared_ptr<const Cell> Puzzle::GetCell( size_t x, size_t y ) const
+{
+    Cell::Validate( x, 1, 9 );
+    Cell::Validate( y, 1, 9 );
+    Position p( x, y );
+    CellMap::const_iterator found = _grid.find( p );
+    if ( found == _grid.end() )
+    {
+        throw std::logic_error( "Could not find given cell in Puzzle" );
+    }
+    return ( found->second );
+}
+
+std::shared_ptr<Cell> Puzzle::GetCell( std::shared_ptr<const Cell> c )
+{
+    CellMap::iterator found = _grid.find( c->GetPos() );
     if ( found == _grid.end() )
     {
         throw std::logic_error( "Could not find given cell in Puzzle" );
@@ -187,7 +250,29 @@ Puzzle::Container Puzzle::GetNeighbors( size_t x, size_t y )
     Cell::Validate( x, 1, 9 );
     Cell::Validate( y, 1, 9 );
     // this should be large enough to hold all neighbors after removing overlap
-    Puzzle::Container N;
+    Container N;
+    std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
+                  make_map_iterator_adaptor( _grid.end() ),
+                  std::inserter( N, N.begin() ),
+                  CellIsNeighbor( x, y ) );
+    // N.erase( c );
+    return N;
+}
+
+Puzzle::ConstContainer Puzzle::GetNeighbors(
+    std::shared_ptr<const Cell> c ) const
+{
+    size_t x = c->GetX();
+    size_t y = c->GetY();
+    return GetNeighbors( x, y );
+}
+
+Puzzle::ConstContainer Puzzle::GetNeighbors( size_t x, size_t y ) const
+{
+    Cell::Validate( x, 1, 9 );
+    Cell::Validate( y, 1, 9 );
+    // this should be large enough to hold all neighbors after removing overlap
+    ConstContainer N;
     std::copy_if( make_map_iterator_adaptor( _grid.begin() ), 
                   make_map_iterator_adaptor( _grid.end() ),
                   std::inserter( N, N.begin() ),
