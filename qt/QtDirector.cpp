@@ -9,6 +9,8 @@
 #include "QtPuzzleModel.h"
 #include "QtPuzzleView.h"
 
+#include "QtCellEditor.h"
+
 #include <GameManager.h>
 #include <GameController.h>
 
@@ -49,9 +51,6 @@ QtDirector::QtDirector( int &argc, char **argv,
 
     _tableView->setModel( _model.get() );
     _tableView->setItemDelegate( _delegate.get() );
-
-    qDebug() << "My delegate is: " << _delegate.get();
-    qDebug() << "Table view is using: " << _tableView->itemDelegate();
 
     connect( _window->GetLoadAction(), SIGNAL( triggered() ),
              _model.get(), SLOT( LoadPuzzle() ) );

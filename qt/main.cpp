@@ -8,7 +8,7 @@ using namespace QtSudoku;
 
 int main( int argc, char** argv )
 {
-//    FILELog::ReportingLevel() = logERROR;
+    FILELog::ReportingLevel() = logERROR;
     QtFactory factory;
     std::shared_ptr<QtDirector> director = factory.CreateDirector( argc, argv );
     return director->Exec();

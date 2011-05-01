@@ -90,7 +90,7 @@ QVariant QtPuzzleModel::data( const QModelIndex &index,
                         }
                         else
                         {
-                            next = QString( "    " );
+                            next = QString( "  " );
                         }
                         markstr += next;
                         if ( i == 3 || i == 6 )
@@ -114,11 +114,28 @@ QVariant QtPuzzleModel::data( const QModelIndex &index,
                     font.setBold( true );
                 }
             }
+            else
+            {
+                Sudoku::Cell::MarkContainer marks = c->GetMarkContainer();
+                if ( marks.any() )
+                {
+                    font.setFamily( "courier" );
+                    font.setPointSize( 10 );
+                }
+            }
             return font;
         }
 
         if ( role == Qt::TextAlignmentRole )
         {
+            if ( c->DisplayedValue() == 0 )
+            {
+                Sudoku::Cell::MarkContainer marks = c->GetMarkContainer();
+                if ( marks.any() )
+                {
+                    return Qt::AlignLeft + Qt::AlignTop;
+                }
+            }
             return Qt::AlignCenter;
         }
 
@@ -130,6 +147,23 @@ QVariant QtPuzzleModel::data( const QModelIndex &index,
         if ( role == Qt::BackgroundRole )
         {
 
+        }
+
+        if ( role == Qt::UserRole )
+        {
+            // if ( c->DisplayedValue() == 0 )
+            // {
+            //     QBitArray a( 10 );
+            //     Sudoku::Cell::MarkContainer marks = c->GetMarkContainer();
+            //     for ( size_t i = 1; i < marks.size(); i++ )
+            //     {
+            //         if ( marks[i] )
+            //         {
+            //             a.setBit( i );
+            //         }
+            //     }
+            //     return a;
+            // }
         }
     }
     return QVariant();
