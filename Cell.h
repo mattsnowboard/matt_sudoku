@@ -2,13 +2,15 @@
 #define SUDOKU_CELL_H
 
 #include <bitset>
+#include <memory>
 #include <set>
 #include <stdexcept>
+#include <vector>
 
 namespace Sudoku
 {
 
-class Visitor;
+class  ICellObserver;
 
 struct Position
 {
@@ -35,6 +37,7 @@ public:
     
     typedef std::bitset<10> MarkContainer;
     typedef std::set<int> MarkedValues;
+    typedef std::vector<std::shared_ptr<ICellObserver> > ObserverContainer;
 
     /**
      * Default constructor just initializes everything to 0
@@ -92,6 +95,7 @@ public:
      * @param correct The new correct value of this Cell
      * @pre correct is in {0...9}
      * @post _correctVal == correct
+     * @post Notify observers if changed
      */
     void SetCorrect( int correct );
 
@@ -100,6 +104,7 @@ public:
      * @param guess The new guessed value of this Cell
      * @pre guess is in {0...9}
      * @post _guessedVal == guess
+     * @post Notify observers if changed
      */
     void SetGuess( int guess );
 
@@ -108,8 +113,9 @@ public:
      * This determines if the correct answer is shown to the player
      * @param display Boolean value to show it or hide it
      * @post _displayCorrect is set to display
+     * @post Notify observers if changed
      */
-    void Display( bool display ) { _displayCorrect = display; }
+    void Display( bool display );
 
     /**
      * Mark
@@ -117,8 +123,9 @@ public:
      * @param mark Integer value to set the mark on
      * @pre mark is in {1...9}
      * @post _marks will set the value given here
+     * @post Notify observers if changed
      */
-    void Mark( int mark ) { _marks.set( mark ); }
+    void Mark( int mark );
 
     /**
      * Unmark
@@ -126,22 +133,25 @@ public:
      * @param mark Integer value to clear the mark on
      * @pre mark is in {1...9}
      * @post _marks will clear the value given here
+     * @post Notify observers if changed
      */
-    void Unmark( int mark ) { _marks.reset( mark ); }
+    void Unmark( int mark );
 
     /**
      * Clear marks
      * Clears all marked values
      * @post _marks has all values false
+     * @post Notify observers if changed
      */
-    void ClearMarks() { _marks.reset(); }
+    void ClearMarks();
 
     /**
      * Mark all
      * Sets all marks for all values
      * @post _marks has all values true
+     * @post Notify observers if changed
      */
-    void MarkAll() { _marks.set(); }
+    void MarkAll();
 
     /**
      * Check whether the correct value is already displayed
@@ -182,6 +192,7 @@ public:
      * Set or clear all Marks
      * @param m A MarkContainer defining the Marks you want
      * @post The Cell's marks are set to m
+     * @post Notify observers if changed
      */
     void SetMarkContainer( const MarkContainer &m );
 
@@ -193,11 +204,26 @@ public:
     MarkedValues GetMarkedValues() const;
 
     /**
-     * Accept a Visitor which will perform actions
-     * @param v Visitor
-     * @post v will perform some actions on this Cell
+     * Add an observer to listen for changes to this Cell
+     * @param o Observer to add
+     * @post o gets updates
      */
-    void Accept( Visitor& v );
+    void AddObserver( std::shared_ptr<ICellObserver> o );
+
+    /**
+     * Remove an observer to stop listening for changes to this Cell
+     * @param o Observer to remove
+     * @pre o was observing Cell
+     * @post o does not get updates
+     */
+    void RemoveObserver( std::shared_ptr<ICellObserver> o );
+
+    /**
+     * Notify all observers that something in this Cell changed
+     * @pre Cell changed
+     * @post All observers listening get notified
+     */
+    void NotifyObservers();
 
     /**
      * Check for ABSOLUTE equality
@@ -237,6 +263,8 @@ private:
     bool _displayCorrect;
     /// Allows user to mark a cell with possible values it can take
     MarkContainer _marks;
+
+    ObserverContainer _observers;
 };
 
 // Attempt to inline this for performance

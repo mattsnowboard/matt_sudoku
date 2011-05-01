@@ -36,7 +36,13 @@ public:
      * @param filename The file to load
      * @post Puzzle pointer in GameManager will be set on success
      */
-    void ImportFromFile( const std::string &filename );
+    bool ImportFromFile( const std::string &filename );
+
+    /**
+     * Create a new Puzzle (resets what was there)
+     * @post Puzzle pointer in GameManager will be reset
+     */
+    void NewPuzzle();
 
     ~GameController() {}
 private:

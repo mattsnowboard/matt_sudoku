@@ -1,7 +1,10 @@
 #include "../Cell.h"
+#include "MockCellObserver.h"
 #include "gtest/gtest.h"
 
 namespace {
+
+using ::testing::Ref;
 
 class CellTest : public ::testing::Test
 {
@@ -23,7 +26,7 @@ protected:
     {
     }
 
-    
+    std::shared_ptr<Sudoku::MockCellObserver> observer;
 };
 
 // Tests that the default cell (with 0 values) will not report correct
@@ -375,5 +378,268 @@ TEST_F( CellTest, AssignmentOperatorReturnsExactCopy )
     copy = original;
     EXPECT_EQ( original, copy );
 }
+
+// test the observer code
+
+TEST_F( CellTest, ThrowIfAddNullObserver )
+{
+    Sudoku::Cell c;
+    EXPECT_ANY_THROW( c.AddObserver( observer ) );
+}
+
+TEST_F( CellTest, ThrowIfRemoveNullObserver )
+{
+    Sudoku::Cell c;
+    EXPECT_ANY_THROW( c.RemoveObserver( observer ) );
+}
+
+TEST_F( CellTest, ThrowIfRemoveObserverTwice )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+    c.RemoveObserver( observer );
+    EXPECT_ANY_THROW( c.RemoveObserver( observer ) );
+}
+
+TEST_F( CellTest, ObserverUpdateOnSetGuess )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.SetGuess( 4 );
+}
+
+TEST_F( CellTest, ObserverUpdateOnEachGuess )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 2 );
+
+    c.SetGuess( 4 );
+    c.SetGuess( 5 );
+}
+
+TEST_F( CellTest, NoObserverUpdateIfUnchangedGuess )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.SetGuess( 4 );
+    c.SetGuess( 4 );
+}
+
+TEST_F( CellTest, ObserverUpdateOnSetCorrect )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.SetCorrect( 4 );
+}
+
+TEST_F( CellTest, ObserverUpdateEachOnSetCorrect )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 2 );
+
+    c.SetCorrect( 4 );
+    c.SetCorrect( 9 );
+}
+
+TEST_F( CellTest, NoObserverUpdateOnSetCorrectUnchanged )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.SetCorrect( 4 );
+    c.SetCorrect( 4 );
+}
+
+TEST_F( CellTest, ObserverUpdateOnMark )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.Mark( 4 );
+}
+
+TEST_F( CellTest, ObserverUpdateOnEachMark )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 3 );
+
+    c.Mark( 3 );
+    c.Mark( 2 );
+    c.Mark( 7 );
+}
+
+TEST_F( CellTest, NoObserverUpdateIfUnchangedMark )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.Mark( 1 );
+    c.Mark( 1 );
+}
+
+TEST_F( CellTest, ObserverUpdateOnUnmark )
+{
+    Sudoku::Cell c;
+    c.Mark( 2 );
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.Unmark( 2 );
+}
+
+TEST_F( CellTest, NoObserverUpdateOnUnmarkUnchanged )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 0 );
+
+    c.Unmark( 3 );
+}
+
+TEST_F( CellTest, SingleObserverUpdateOnMarkAll )
+{
+    Sudoku::Cell c;
+    c.Mark( 3 );
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.MarkAll();
+    c.MarkAll();
+}
+
+TEST_F( CellTest, NoObserverUpdateOnMarkAllIfMarked )
+{
+    Sudoku::Cell c;
+    c.MarkAll();
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 0 );
+
+    c.MarkAll();
+}
+
+TEST_F( CellTest, SingleObserverUpdateOnClearMarks )
+{
+    Sudoku::Cell c;
+    c.Mark( 5 );
+    c.Mark( 6 );
+    c.Mark( 7 );
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.ClearMarks();
+    c.ClearMarks();
+}
+
+TEST_F( CellTest, ObserverUpdateOnDisplayChange )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+
+    c.Display( true );
+}
+
+TEST_F( CellTest, ObserverUpdateOnEachDisplayChange )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 2 );
+
+    c.Display( true );
+    c.Display( false );
+}
+
+TEST_F( CellTest, NoObserverUpdateOnDisplayUnchanged )
+{
+    Sudoku::Cell c;
+    c.Display( true );
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 0 );
+
+    c.Display( true );
+}
+
+// Make sure that we don't attach observers to copies
+TEST_F( CellTest, NoObserverUpdateOnCopy )
+{
+    Sudoku::Cell c;
+    observer.reset( new Sudoku::MockCellObserver );
+    c.AddObserver( observer );
+
+    Sudoku::Cell copy( c );
+
+    EXPECT_CALL( *observer, Update( Ref( c ) ) )
+        .Times( 1 );
+    EXPECT_CALL( *observer, Update( Ref( copy ) ) )
+        .Times( 0 );
+
+    c.SetGuess( 3 );
+    copy.SetGuess( 4 );
+}
+
 
 }  // namespace

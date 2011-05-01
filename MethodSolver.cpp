@@ -15,8 +15,9 @@ namespace Sudoku
 namespace
 {
 
-void ExecuteAllMethods( SolverHelper::MethodContainer methods )
+bool ExecuteAllMethods( SolverHelper::MethodContainer methods )
 {
+    bool anyExecuted = false;
     for ( SolverHelper::MethodContainer::iterator it = methods.begin();
           it != methods.end();
           ++it )
@@ -26,11 +27,13 @@ void ExecuteAllMethods( SolverHelper::MethodContainer methods )
         {
             (*it)->ExecuteForward();
             FILE_LOG(logINFO) << "Executed Method.";
+            anyExecuted = true;
         }
     }
+    return anyExecuted;
 }
 
-void ExecuteRandomMethod( SolverHelper::MethodContainer methods )
+bool ExecuteRandomMethod( SolverHelper::MethodContainer methods )
 {
     if ( !methods.empty() )
     {
@@ -41,8 +44,10 @@ void ExecuteRandomMethod( SolverHelper::MethodContainer methods )
         {
             methods.front()->ExecuteForward();
             FILE_LOG(logINFO) << "Executed Method.";
+            return true;
         }
     }
+    return false;
 }
 
 }
@@ -88,14 +93,16 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
     bool valid = false;
     do
     {
+        gotAnyMethods = false;
+
         // Single Candidate, we can safely execute all
         FILE_LOG(logINFO) << "Single Candidate Methods";
         SolverHelper::MethodContainer methods =
             _helper->GetAllSingleCandidate( p );
         if ( !methods.empty() )
         {
-            gotAnyMethods = true;
-            ExecuteAllMethods( methods );
+            bool success = ExecuteAllMethods( methods );
+            gotAnyMethods = gotAnyMethods || success;
         }
         
         // Exclusion Method
@@ -104,8 +111,8 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
         methods = _helper->GetAllExclusion( p );
         if ( !methods.empty() )
         {
-            gotAnyMethods = true;
-            ExecuteAllMethods( methods );
+            bool success = ExecuteAllMethods( methods );
+            gotAnyMethods = gotAnyMethods || success;
         }
 
         // Block Intersection
@@ -123,8 +130,8 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
                 
                 if ( !methods.empty() )
                 {
-                    gotAnyMethods = true;
-                    ExecuteAllMethods( methods );
+                    bool success = ExecuteAllMethods( methods );
+                    gotAnyMethods = gotAnyMethods || success;
                 }
             }
         }
@@ -140,8 +147,8 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
             methods = _helper->GetAllCoveringSet( p, row_ );
             if ( !methods.empty() )
             {
-                gotAnyMethods = true;
-                ExecuteRandomMethod( methods );
+                    bool success = ExecuteRandomMethod( methods );
+                    gotAnyMethods = gotAnyMethods || success;
             }
         }
         for ( size_t col = 1; col <= 9; col++ )
@@ -152,8 +159,8 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
             methods = _helper->GetAllCoveringSet( p, col_ );
             if ( !methods.empty() )
             {
-                gotAnyMethods = true;
-                ExecuteRandomMethod( methods );
+                    bool success = ExecuteRandomMethod( methods );
+                    gotAnyMethods = gotAnyMethods || success;
             }
         }
         for ( size_t x = 1; x <= 3; x++ )
@@ -166,8 +173,8 @@ void MethodSolver::Solve( std::shared_ptr<Puzzle> p )
                 methods = _helper->GetAllCoveringSet( p, block_ );
                 if ( !methods.empty() )
                 {
-                    gotAnyMethods = true;
-                    ExecuteRandomMethod( methods );
+                    bool success = ExecuteRandomMethod( methods );
+                    gotAnyMethods = gotAnyMethods || success;
                 }
             }
         }

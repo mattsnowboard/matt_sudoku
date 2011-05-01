@@ -7,6 +7,7 @@ namespace Sudoku
 {
 
 class CommandBase;
+class ICommandObserver;
 
 /**
  * Class which can execute commands and hold undo/redo stack
@@ -53,6 +54,21 @@ public:
      */
     virtual bool Redo() = 0;
 
+    /**
+     * Add an observer to listen for changes to the command state
+     * @param o Observer to add
+     * @post o gets updates
+     */
+    virtual void AddObserver( std::shared_ptr<ICommandObserver> o ) = 0;
+
+    /**
+     * Remove an observer to stop listening for changes to the command state
+     * @param o Observer to remove
+     * @pre o was observing Cell
+     * @post o does not get updates
+     */
+    virtual void RemoveObserver( std::shared_ptr<ICommandObserver> o ) = 0;
+    
     virtual ~ICommandExecutor() {}
 };
 

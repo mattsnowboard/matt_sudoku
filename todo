@@ -2,23 +2,16 @@
 1. Remaining Solving Methods
    D. XWingMethod
    E. XWingMethodTest
-2. Controllers
-   A. CellController
-      i. write tests
-   B. PuzzleController
-      i. write tests
-   C. GameController
-      i. write tests
 3. GameManager
    C. ???
 4. UI
    A. Observer pattern Cell Notifies QtModel, QtView queries QtModel
+      ii. QtModel is Interface that gets notified
    B. QtModel edits data via Controllers
 4. Puzzle::Randomize() - Create a valid (solved) puzzle
 6. Generator (just inverse of Solver, seems not as hard if paper is right)
 8. Load Puzzle to solve
-   A. Use some simple format
-   B. Allow other formats
+   B. Allow other formats, such as standards from other software
 9. Export generated Puzzle
    A. Same formats as above?
 10. Save game state (including undo/redo stack)

@@ -1,7 +1,8 @@
 
 #include "Cell.h"
+#include "ICellObserver.h"
 #include <iostream>
-#include <stdexcept>
+#include <algorithm>
 
 namespace Sudoku
 {
@@ -49,6 +50,10 @@ void Cell::SetPos( Position p )
 void Cell::SetCorrect( int correct )
 {
     Validate( correct, 0, 9 );
+    if ( _correctVal != correct )
+    {
+        NotifyObservers();
+    }
     _correctVal = correct;
 }
 
@@ -57,12 +62,61 @@ void Cell::SetGuess( int guess )
     Validate( guess, 0, 9 );
     if ( CanGuess() )
     {
+        if ( _guessedVal != guess )
+        {
+            NotifyObservers();
+        }
         _guessedVal = guess;
     }
     else
     {
         throw std::logic_error( "Cannot guess on a correct displayed Cell" );
     }
+}
+
+void Cell::Display( bool display )
+{
+    if ( _displayCorrect != display )
+    {
+        NotifyObservers();
+    }
+    _displayCorrect = display;
+}
+
+void Cell::Mark( int mark )
+{
+    if ( !_marks.test( mark ) )
+    {
+        NotifyObservers();
+    }
+    _marks.set( mark );
+}
+
+void Cell::Unmark( int mark )
+{
+    if ( _marks.test( mark ) )
+    {
+        NotifyObservers();
+    }
+    _marks.reset( mark );
+}
+
+void Cell::ClearMarks()
+{
+    if ( _marks.any() )
+    {
+        NotifyObservers();
+    }
+    _marks.reset();
+}
+
+void Cell::MarkAll()
+{
+    if ( _marks.count() < _marks.size() )
+    {
+        NotifyObservers();
+    }
+    _marks.set();
 }
 
 int Cell::DisplayedValue() const
@@ -85,6 +139,10 @@ bool Cell::IsCorrect() const
 
 void Cell::SetMarkContainer( const Cell::MarkContainer &m )
 {
+    if ( _marks != m )
+    {
+        NotifyObservers();
+    }
     _marks &= m;
     _marks |= m;
 }
@@ -106,9 +164,40 @@ Cell::MarkedValues Cell::GetMarkedValues() const
     return M;
 }
 
-void Cell::Accept( Visitor& v )
+void Cell::AddObserver( std::shared_ptr<ICellObserver> o )
 {
+    if ( !o )
+    {
+        throw std::runtime_error( "Cannot add NULL observer." );
+    }
+    _observers.push_back( o );
+}
 
+void Cell::RemoveObserver( std::shared_ptr<ICellObserver> o )
+{
+    if ( !o )
+    {
+        throw std::runtime_error( "Cannot remove NULL observer." );
+    }
+    ObserverContainer::iterator found = std::find( _observers.begin(),
+                                                   _observers.end(),
+                                                   o );
+    if ( found == _observers.end() )
+    {
+        throw std::runtime_error(
+            "Attempt to remove observer not listening to Cell." );
+    }
+    _observers.erase( found );
+}
+
+void Cell::NotifyObservers()
+{
+    for ( ObserverContainer::iterator it = _observers.begin();
+          it != _observers.end();
+          ++it )
+    {
+        (*it)->Update( *this );
+    }
 }
 
 bool Cell::operator==( const Cell& c ) const

@@ -23,7 +23,14 @@ std::shared_ptr<Puzzle> SimplePuzzleImporter::Import( std::istream &in )
             {
                 in >> curr;
                 FILE_LOG(logDEBUG2) << "Read character: '" << curr << "'";
-            } while ( curr == ' ' || curr == '\n' || curr == '\t' );
+            } while ( in &&
+                      ( curr == ' ' || curr == '\n' || curr == '\t' ) );
+            if ( !in )
+            {
+                FILE_LOG(logWARNING)
+                    << "Reached end of file while still filling puzzle";
+                throw std::runtime_error( "End of file reached." );
+            }
             FILE_LOG(logDEBUG1) << " Handling character: '" << curr << "'";
             // check that curr is an int
             if ( curr < '0' || curr > '9' )

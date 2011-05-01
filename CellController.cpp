@@ -14,7 +14,18 @@ CellController::CellController( std::shared_ptr<ICommandExecutor> exec,
                                 std::shared_ptr<IPuzzleAccess> access )
     : _executor( exec ),
       _puzzleAccess( access )
-{}
+{
+    if ( !_executor )
+    {
+        throw std::runtime_error(
+            "Cannot create CellController with NULL CommandExecutor." );
+    }
+    if ( !_puzzleAccess )
+    {
+        throw std::runtime_error(
+            "Cannot create CellController with NULL PuzzleAccess." );
+    }
+}
 
 void CellController::MakeGuess( size_t x, size_t y, int guess )
 {

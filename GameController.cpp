@@ -26,9 +26,14 @@ void GameController::Redo()
     }
 }
 
-void GameController::ImportFromFile( const std::string &filename )
+bool GameController::ImportFromFile( const std::string &filename )
 {
-    _importer->ImportFromFile( filename );
+    return _importer->ImportFromFile( filename );
+}
+
+void GameController::NewPuzzle()
+{
+    _importer->NewPuzzle();
 }
 
 }

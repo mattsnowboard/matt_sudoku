@@ -26,7 +26,14 @@ std::shared_ptr<Puzzle> SolvedPuzzleImporter::Import( std::istream &in )
             {
                 in >> curr;
                 FILE_LOG(logDEBUG2) << "Read character: '" << curr << "'";
-            } while ( curr == ' ' || curr == '\n' || curr == '\t' );
+            } while ( in &&
+                      ( curr == ' ' || curr == '\n' || curr == '\t' ) );
+            if ( !in )
+            {
+                FILE_LOG(logWARNING)
+                    << "Reached end of file while still filling puzzle";
+                throw std::runtime_error( "End of file reached." );
+            }
             FILE_LOG(logDEBUG1) << " Handling character: '" << curr << "'";
             // check that curr is an int
             if ( curr < '0' || curr > '9' )
@@ -43,7 +50,14 @@ std::shared_ptr<Puzzle> SolvedPuzzleImporter::Import( std::istream &in )
             {
                 in >> curr;
                 FILE_LOG(logDEBUG2) << "Read character: '" << curr << "'";
-            } while ( curr == ' ' || curr == '\n' || curr == '\t' );
+            } while ( in &&
+                      ( curr == ' ' || curr == '\n' || curr == '\t' ) );
+            if ( !in )
+            {
+                FILE_LOG(logWARNING)
+                    << "Reached end of file while still filling puzzle";
+                throw std::runtime_error( "End of file reached." );
+            }
             FILE_LOG(logDEBUG1) << " Handling character: '" << curr << "'";
             // check that curr is an int
             if ( curr != _show && curr != _hide )
@@ -66,7 +80,8 @@ std::shared_ptr<Puzzle> SolvedPuzzleImporter::Import( std::istream &in )
 
 bool SolvedPuzzleImporter::CanHandleExtension( const std::string &name )
 {
-    return true;
+    size_t dot = name.find_last_of( '.' );
+    return ( name.substr( dot + 1 ) == "solved" );
 }
 
 }

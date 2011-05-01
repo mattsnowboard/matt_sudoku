@@ -13,20 +13,23 @@ TEST_SRCS = test/TestRunner.cpp test/CellTest.cpp test/PuzzleTest.cpp \
 	test/GuessCommandTest.cpp test/MarkCommandTest.cpp \
 	test/UnmarkCommandTest.cpp test/MethodSolverTest.cpp \
 	test/SimplePuzzleImporterTest.cpp test/SolvedPuzzleImporterTest.cpp \
-	test/AddHintMarksCommandTest.cpp
+	test/AddHintMarksCommandTest.cpp test/CellControllerTest.cpp \
+	test/PuzzleControllerTest.cpp test/SolveCommandTest.cpp
 QT_SRCS = 
 LIB_SRCS = Puzzle.cpp Cell.cpp SingleCandidateMethod.cpp ExclusionMethod.cpp \
 	BlockIntersectionMethod.cpp CoveringSetMethod.cpp SimpleValidator.cpp \
 	PuzzleMarker.cpp PlayerValidator.cpp SolverHelper.cpp GuessCommand.cpp \
 	MarkCommand.cpp UnmarkCommand.cpp MethodSolver.cpp \
 	SimplePuzzleImporter.cpp SolvedPuzzleImporter.cpp GameManager.cpp \
-	CellController.cpp AddHintMarksCommand.cpp GameController.cpp
+	CellController.cpp AddHintMarksCommand.cpp GameController.cpp \
+	PuzzleController.cpp SolveCommand.cpp
 
 DEPDIR = .deps
 df = $(DEPDIR)/$(@F)
 
 # preprocessor
 CPPFLAGS += -I$(GTEST_DIR)/include -I$(GMOCK_DIR)/include -I$(SRC_DIR) $(QTINC)
+
 # C++ compiler
 CXXFLAGS = -Wall -std=c++0x
 # qt defines
@@ -53,6 +56,20 @@ QT_OBJS := $(QT_SRCS:%.cpp=%.o)
 TEST_OBJS := $(TEST_SRCS:%.cpp=%.o)
 
 # targets:
+debug : CXXFLAGS += -g -O0
+# removed this warning because it sucks: -Wconversion (int to size_t!)
+debug_warn : CXXFLAGS += -pedantic -Wextra 
+debug_warn : debug
+debug : all
+release : CXXFLAGS += -O2
+release : all
+
+lib : CXXFLAGS += -fPIC
+lib : debug libSudokuLib.so
+
+libSudokuLib.so : $(LIB_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -o libSudokuLib.so $(LIB_OBJS)
+
 all : sudoku run_tests
 
 sudoku : $(OBJS) $(QT_OBJS)

@@ -9,6 +9,7 @@ namespace Sudoku
 class ICommandExecutor;
 class IPuzzleAccess;
 class IPuzzleMarker;
+class ISolver;
 
 class PuzzleController
 {
@@ -20,7 +21,8 @@ public:
      */
     PuzzleController( std::shared_ptr<ICommandExecutor> exec,
                       std::shared_ptr<IPuzzleAccess> access,
-                      std::shared_ptr<IPuzzleMarker> marker );
+                      std::shared_ptr<IPuzzleMarker> marker,
+                      std::shared_ptr<ISolver> solver );
 
     /**
      * Mark all Cells with their possible values to give hints to user
@@ -28,6 +30,13 @@ public:
      * @note undoable
      */
     void MarkHints();
+
+    /**
+     * Attempt to solve an unsolved puzzle
+     * @pre Puzzle lacks solution
+     * @post Solved puzzle is displayed
+     */
+    void Solve();
 
     ~PuzzleController() {}
 
@@ -41,6 +50,8 @@ private:
     std::shared_ptr<IPuzzleAccess> _puzzleAccess;
     /// marker
     std::shared_ptr<IPuzzleMarker> _puzzleMarker;
+    /// solver
+    std::shared_ptr<ISolver> _solver;
 };
 
 }

@@ -147,4 +147,80 @@ TEST_F( SolvedPuzzleImporterTest, IgnoresWhitespace )
     EXPECT_TRUE( CheckPuzzleWithString( example1 ) );
 }
 
+// Throw if not enough text while parsing for number
+TEST_F( SolvedPuzzleImporterTest, ThrowsIfNotEnoughInputNumber )
+{
+    std::string example1( "\
+1+2+3-4+5+6-7+8-9-\
+4-5+6-7-8-9+1-2-3+\
+7+8-9-1-2+3-4+5-6+\
+2-3+4-5+6-7-8-9+1-\
+5-6-7-8+9+1-2-3+4-\
+8-9-1+2-3+4-5+6-7-\
+3+4+5+6-7+8+9-1-2+\
+6-7+8+9-1+2-3-4+5+\
+9+1+2-3-" );
+
+    std::istringstream instream( example1 );
+
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
+// Throw if not enough text while parsing for + or minus
+TEST_F( SolvedPuzzleImporterTest, ThrowsIfNotEnoughInputModifier )
+{
+    std::string example1( "\
+1+2+3-4+5+6-7+8-9-\
+4-5+6-7-8-9+1-2-3+\
+7+8-9-1-2+3-4+5-6+\
+2-3+4-5+6-7-8-9+1-\
+5-6-7-8+9+1-2-3+4-\
+8-9-1+2-3+4-5+6-7-\
+3+4+5+6-7+8+9-1-2+\
+6-7+8+9-1+2-3-4+5+\
+9+1+2-3" );
+
+    std::istringstream instream( example1 );
+
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
+// Throw if not enough text while parsing for number whitespace check
+TEST_F( SolvedPuzzleImporterTest, ThrowsIfNotEnoughInputNumberWS )
+{
+    std::string example1( "\
+1+2+3-4+5+6-7+8-9-\
+4-5+6-7-8-9+1-2-3+\
+7+8-9-1-2+3-4+5-6+\
+2-3+4-5+6-7-8-9+1-\
+5-6-7-8+9+1-2-3+4-\
+8-9-1+2-3+4-5+6-7-\
+3+4+5+6-7+8+9-1-2+\
+6-7+8+9-1+2-3-4+5+\
+9+1+2-3-   " );
+
+    std::istringstream instream( example1 );
+
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
+// Throw if not enough text while parsing for + or minus whitespace check
+TEST_F( SolvedPuzzleImporterTest, ThrowsIfNotEnoughInputModifierWS )
+{
+    std::string example1( "\
+1+2+3-4+5+6-7+8-9-\
+4-5+6-7-8-9+1-2-3+\
+7+8-9-1-2+3-4+5-6+\
+2-3+4-5+6-7-8-9+1-\
+5-6-7-8+9+1-2-3+4-\
+8-9-1+2-3+4-5+6-7-\
+3+4+5+6-7+8+9-1-2+\
+6-7+8+9-1+2-3-4+5+\
+9+1+2-3     " );
+
+    std::istringstream instream( example1 );
+
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
 }  // namespace

@@ -144,4 +144,38 @@ TEST_F( SimplePuzzleImporterTest, IgnoresWhitespace )
     EXPECT_TRUE( CheckPuzzleWithString( example1 ) );
 }
 
+// Throw if not enough text
+TEST_F( SimplePuzzleImporterTest, ThrowsIfNotEnoughInput )
+{
+    std::string example1( "\
+069000130\n\
+050008009\n\
+720000640\n\
+000730500\n\
+900000001\n\
+004065000\n\
+097000053\n\
+500200010\n\
+0160004\n" );
+    std::istringstream instream( example1 );
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
+// Throw if not enough text in whitespace check
+TEST_F( SimplePuzzleImporterTest, ThrowsIfNotEnoughInputWS )
+{
+    std::string example1( "\
+069000130\n\
+050008009\n\
+720000640\n\
+000730500\n\
+900000001\n\
+004065000\n\
+097000053\n\
+500200010\n\
+016000           \n" );
+    std::istringstream instream( example1 );
+    EXPECT_ANY_THROW( _puzzle = _importer->Import( instream ) );
+}
+
 }  // namespace
