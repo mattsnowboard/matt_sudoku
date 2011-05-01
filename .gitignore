@@ -6,6 +6,8 @@
 *.tar
 run_tests
 sudoku
+*qtsudoku
+*moc_*
 .D_TARGET
 .deps
 doc
