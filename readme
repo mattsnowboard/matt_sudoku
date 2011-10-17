@@ -1,15 +1,101 @@
 --------------------------------------------------------------------------------
-BUILDING:
 
-To build this project, you must have GoogleMock and GoogleTest version 1.5
-available.  Please update the makefile with the appropriate directory paths.
+Requirements:
+ - Works with gcc 4.4 (but 4.3 SHOULD work too)
 
-You must also have Qt4 installed.
+ - Google Test 1.5
+   http://code.google.com/p/googletest/downloads/detail?name=gtest-1.5.0.tar.bz2&can=1&q=
+      NOTE: 1.6 has been released but I did not test it (it may work though)
 
-This project has been tested with gcc 4.4, but should work with gcc 4.3
+ - Google Mock 1.5
+   http://code.google.com/p/googlemock/downloads/detail?name=gmock-1.5.0.tar.gz&can=1&q=
+      NOTE: 1.6 has been released but I did not test it (it may work though)
+
+ - Qt 4.7.x (for the UI)
+   http://qt.nokia.com/downloads
+   I believe you just need the Framework only (not SDK)
+   My project does require qmake, but that should be in both packages
 
 --------------------------------------------------------------------------------
-RUNNING:
 
-Currently, there is no GUI, the only thing this will produce is an executable
-"run_tests" which will run all of the unit tests.
+Setup:
+ - First update honors_option/makefile with your directory paths
+   - You need to set the google test and google mock directories
+   - You must also set SRC_DIR to the location of all source files
+ - The UI uses a separate make process, open honors_option/qt/qt.pro
+   - Find this line:
+     LIBS += -L/home/matt/Documents/cse335/honors_option -lSudokuLib
+   - Update the path to the same one as in the makefile (where libSudokuLib.so gets built)
+
+ - Unfortunately, there are two steps to build (I never had time to learn enough about qmake to merge this into a one step process)
+
+--------------------------------------------------------------------------------
+
+Build:
+ - run "make" in honors_option/
+   - This will create the shared library libSudokuLib.so for Qt
+   - This will also create the google test runner
+ - run "qmake" in honors_option/qt/
+ - run "make" in honors_option/qt/
+   - This makes a custom Makefile and builds the Qt application
+
+--------------------------------------------------------------------------------
+
+Run:
+ - Run "./run_tests" from honors_option
+   - This runs the unit tests to demonstrate most functionality is working
+   - You can get a good handle on what is going on from all of the files in
+     honors_option/test/*Test.cpp
+ - Run "./qtsudoku" from honors_option/qt
+   - This will run the UI
+   - You are able to load files from the menu
+   - You can make guesses on the Puzzle
+   - You can make the solver solve the puzzle
+   - You can get hints as to what the possible valid guesses are for each cell
+   - Limitations:
+     - Cannot modify the "pencil marks"
+     - Exceptions are thrown on error and caught to display a message
+       but you must exit afterwards
+     - No feedback about when you are correct or wrong
+     - No timer or score or difficulty rating
+
+--------------------------------------------------------------------------------
+
+Files:
+ - There are example input files you can test (all found in honors_option/qt):
+   - sample
+   - puzzle_medium
+   - puzzle_hard
+ - You can see the format and create your own file from a real sudoku game
+
+--------------------------------------------------------------------------------
+
+Looking through the source:
+ - I used Doxygen comments through all the classes (except I didn't have time
+   for the Qt part)
+   - Check honors_option/doc/html to browse through it if you'd like
+
+--------------------------------------------------------------------------------
+
+Notes:
+ - This project uses MVC (model view controller)
+   - The data model is mostly Puzzle.h and Cell.h
+   - The controllers are *Command.h
+   - The view is built on top in Qt (nothing else knows about Qt)
+     - The view uses Qt*Model to talk to my controllers and read-only data
+     - It also uses Qt*View to talk to Qt*Model and present data
+ - This uses the Command Pattern with undo/redo
+   - You can only access const objects from the IPuzzleAccess
+   - You can create *Command's with the const objects
+   - The ICommandExecutor can run a *Command on a non-const object
+ - The solver is using a method I read about which theoretically can be turned
+   into a generator
+   - It executes atomic operations (*Method.h) which are all functions with an
+     inverse
+   - A generator would take a complete Puzzle (solved) and perform inverse
+     methods randomly (as a tree of new Puzzles), and check that they are
+     still solvable.  It would iteratively repeat this for n valid Puzzles
+     until No more solvable puzzles can be generated with the methods
+   - Take a look at MethodSolver.cpp to see the solver work
+   - The solver uses SolverHelper.cpp to find possible actions to perform
+
